@@ -1,0 +1,13 @@
+{% extends 'layouts/boilerplate.html' %}
+
+{% block main %}
+<h1>Dashboard</h1>
+
+<ol>
+  {% for event in events -%}
+    <li><a href="{{ url_for('events.view', slug=event.slug) }}">{{ event }}</a></li>
+  {% else %}
+    <li>There are no available events.</li>
+  {% endfor %}
+</ol>
+{% endblock %}

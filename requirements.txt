@@ -1,0 +1,7 @@
+-e .
+
+# Development and testing requirements
+check-manifest
+invoke
+tox
+wheel

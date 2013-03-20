@@ -1,0 +1,47 @@
+{% extends 'layouts/boilerplate.html' %}
+
+{% block title %}{{ event }} - {{ super() }}{% endblock %}
+
+{% block main %}
+  <div class="xmas-header" id="container">
+    <div class="container">
+      <h1>{{ event }}</h1>
+      <p>
+        {% if request.endpoint == 'events.view' %}
+          These are the people you're supposed to give gifts to.
+        {% else %}
+          Here's everyone who's looking for something in their stocking.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  <div class="container xmas-container">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="xmas-sidebar hidden-print affix-top" role="complementary">
+          <ul class="nav xmas-sidenav">
+            {% for user in recipients %}
+              <li>
+                <a href="#{{ user.recipient.name }}">{{ user.recipient.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-9" role="main">
+        {% for user in recipients %}
+          <div class="xmas-section">
+            <div class="page-header">
+              <img src="{{ user.recipient.email|gravatar }}">
+              <h2 id="{{ user.recipient.name }}">{{ user.recipient.name }}</h2>
+            </div>
+            {% for item in user.wishlist %}
+              {% include 'events/item.html' %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

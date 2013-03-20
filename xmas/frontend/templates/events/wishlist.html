@@ -1,0 +1,39 @@
+{% extends 'layouts/boilerplate.html' %}
+
+{% block main %}
+  <div class="xmas-header">
+    <div class="container">
+      <h1>My Wishlist</h1>
+      <p>All I want for Christmas is...</p>
+    </div>
+  </div>
+
+  <div class="container xmas-container">
+    <div class="row">
+      <div class="col-md-12" role="main">
+        <div class="xmas-wishlist">
+          {% if event.is_still_active %}
+            <div class="xmas-details">
+              <div class="xmas-item xmas-new">
+                {% include 'events/edit_item.html' %}
+              </div>
+            </div>
+          {% endif %}
+          {% for item in items %}
+            <div class="xmas-details">
+              <div class="xmas-item">
+                <h3>{{ item }}</h3>
+                {% if event.is_still_active %}
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-edit" data-id="{{ item.id }}">Edit</button>
+                    <button type="button" class="btn btn-default btn-delete" data-id="{{ item.id }}">I changed my mind, I don't want this anymore</button>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

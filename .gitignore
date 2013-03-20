@@ -1,6 +1,8 @@
 docs/_build
+.sass-cache
 
 *~
+*.swp
 *#*
 .DS*
 
@@ -20,9 +22,6 @@ sdist
 develop-eggs
 .installed.cfg
 
-# Dist files
-*.gz
-
 # Installer logs
 pip-log.txt
 
@@ -35,5 +34,3 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-
-secrets.cfg

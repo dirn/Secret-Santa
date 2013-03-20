@@ -1,0 +1,22 @@
+{%- extends 'base.html' -%}
+
+
+{%- block hero -%}
+    <div class="page-header">
+        <div class="container">
+            <h1>Welcome to Secret Santa</h1>
+        </div>
+    </div>
+{%- endblock -%}
+
+
+{%- block content -%}
+    <div class="container">
+        <p>You are participating in these events:</p>
+        <ol class="unstyled">
+            {%- for event in events -%}
+                <li><a href="{{ url_for('event', slug=event.slug) }}">{{ event }}</a></li>
+            {%- endfor -%}
+        </ol>
+    </div>
+{%- endblock -%}

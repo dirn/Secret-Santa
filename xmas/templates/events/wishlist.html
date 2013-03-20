@@ -1,0 +1,29 @@
+{%- extends 'base.html' -%}
+
+
+{%- block title -%}
+    {{ event }} - {{ super() }}
+{%- endblock -%}
+
+
+{%- block hero -%}
+    <div class="page-header">
+        <div class="container">
+            <h1>{{ event }}</h1>
+        </div>
+    </div>
+{%- endblock -%}
+
+
+{%- block content -%}
+    <div class="container">
+        <ul class="nav nav-pills">
+            <li><a href="{{ url_for('event', slug=event.slug) }}">{{ event }}</a></li>
+            <li class="active"><a href="{{ url_for('wishlist', slug=event.slug) }}">Wishlist</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <p>You are asking for</p>
+    </div>
+{%- endblock -%}

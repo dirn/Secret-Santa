@@ -1,0 +1,19 @@
+{% from 'bootstrap/wtf.html' import form_field %}
+
+<form action="{{ url_for('events.wishlist', slug=event.slug) }}" method="POST">
+  {{ form.csrf_token }}
+  {{ form_field(form.id) }}
+  {{ form_field(form.name, placeholder='What do you want?') }}
+  {{ form_field(form.description, placeholder='Description (Optional)') }}
+  {{ form_field(form.cost, placeholder='How much does it cost? (Optional)') }}
+  {{ form_field(form.quantity, placeholder='How many do you want?') }}
+  {{ form_field(form.url, placeholder='Where can it be found? (an optional URL)') }}
+  <div class="btn-group">
+    {% if form.id.data %}
+      <button type="submit" class="btn btn-default btn-update" data-id="{{ form.id.data }}">Update</button>
+      <button type="button" class="btn btn-default btn-cancel">Cancel</button>
+    {% else %}
+      <button type="submit" class="btn btn-default btn-add">Add to wishlist</button>
+    {% endif %}
+  </div>
+</form>

@@ -1,0 +1,36 @@
+{%- extends 'base.html' -%}
+
+
+{%- from 'macros/forms.html' import render_field_horizontal as render_field -%}
+
+
+{%- block title -%}
+    My Profile - {{ super() }}
+{%- endblock -%}
+
+
+{%- block hero -%}
+    <div class="page-header">
+        <div class="container">
+            <h1>{{ current_user }}'s profile</h1>
+        </div>
+    </div>
+{%- endblock -%}
+
+
+{%- block content -%}
+    <div class="container">
+        <form method="post" class="form-horizontal">
+            {{ form.csrf_token }}
+
+            {{ render_field(form.name) }}
+            {{ render_field(form.email) }}
+
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{%- endblock -%}
