@@ -51,6 +51,7 @@ setup(
         'Werkzeug==0.9.4',
         'alembic==0.6.0',
         'blinker==1.3',
+        'gunicorn',
         'itsdangerous==0.23',
         'passlib==1.6.1',
         'psycopg2==2.5.1',
