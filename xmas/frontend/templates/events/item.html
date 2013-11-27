@@ -1,23 +1,28 @@
 <div class="xmas-item">
   <div class="xmas-details">
-    <h3>{{ item }}</h3>
+    <h3>
+      {{ item }}
+      {% if item.quantity > 1 %}
+        <span class="quantity">(this x {{ item.quantity }})</span>
+      {% endif %}
+    </h3>
     {% if item.description %}<p>{{ item.description }}</p>{% endif %}
     <div class="btn-group">
       {% if item.is_claimed(current_user.id) %}
         <button type="button" class="btn btn-default xmas-unclaim" data-id="{{ item.id }}">Nah, I changed my mind</button>
-      {% if item.is_purchased(current_user.id) %}
-      <button type="button" class="btn btn-default xmas-return" data-id="{{ item.id }}">I was wrong, I haven't purchased this item yet</button>
-      {% else %}
-      <button type="button" class="btn btn-default xmas-purchase" data-id="{{ item.id }}">I've purchased this item</button>
-      {% endif %}
-      {% else %}
-      <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to get this!</button>
+        {% if item.is_purchased(current_user.id) %}
+          <button type="button" class="btn btn-default xmas-return" data-id="{{ item.id }}">I was wrong, I haven't purchased this item yet</button>
+        {% else %}
+          <button type="button" class="btn btn-default xmas-purchase" data-id="{{ item.id }}">I've purchased this item</button>
+        {% endif %}
+      {% elif item.quantity == 0 or item.quantity_claimed == 0 %}
+        <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to get this!</button>
       {% endif %}
     </div>
   </div>
   {% if item.url %}
-  <div class="highlight">
-    <a href="{{ item.url }}" target="_blank">Show it to me</a>
-  </div>
+    <div class="highlight">
+      <a href="{{ item.url }}" target="_blank">Show it to me</a>
+    </div>
+  {% endif %}
 </div>
-{% endif %}
