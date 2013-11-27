@@ -5,6 +5,7 @@ from functools import wraps
 from flask import render_template
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.security import login_required
+from raven.contrib.flask import Sentry
 
 from xmas import factory
 from xmas.frontend import admin, filters
@@ -19,6 +20,7 @@ def create_app():
     Bootstrap(app)
     admin.init_app(app)
     filters.init_app(app)
+    Sentry(app)
 
     if not app.debug:
         for e in (404, 500):
