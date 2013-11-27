@@ -1,8 +1,7 @@
 {% from 'bootstrap/wtf.html' import form_field %}
 
 <form action="{{ url_for('events.wishlist', slug=event.slug) }}" method="POST">
-  {{ form.csrf_token }}
-  {{ form_field(form.id) }}
+  {{ form.hidden_tag() }}
   {{ form_field(form.name, placeholder='What do you want?') }}
   {{ form_field(form.description, placeholder='Description (Optional)') }}
   {{ form_field(form.cost, placeholder='How much does it cost? (Optional)') }}
