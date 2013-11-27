@@ -51,7 +51,7 @@ setup(
         'Werkzeug==0.9.4',
         'alembic==0.6.0',
         'blinker==1.3',
-        'gunicorn',
+        'gunicorn==18.0',
         'itsdangerous==0.23',
         'newrelic==2.6.0.5',
         'raven==3.5.2',
