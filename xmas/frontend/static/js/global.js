@@ -123,13 +123,15 @@
     var initQuantity = function(this) {
         var $this = $(this);
 
+        var id = $this.closest('form').find('input[name=id]').val();
+
         var $p = $('<p/>');
         $p.insertAfter($this.parent());
 
-        var $label = $('<label for="qty-unlimited">Give me a lot!</label>');
+        var $label = $('<label for="qty-unlimited-' + id + '">Give me a lot!</label>');
         $p.append($label);
 
-        var $check = $('<input type="checkbox" name="unlimited" id="qty-unlimited">');
+        var $check = $('<input type="checkbox" name="unlimited" id="qty-unlimited-' + id + '">');
         $p.append($check);
 
         $check.change(function() {

@@ -219,10 +219,12 @@ h2[id] {
 
   label {
     display: none;
+  }
 
-    &[for=qty-unlimited] {
-      display: inline-block;
-    }
+  p label {
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 4px;
   }
 }
 
