@@ -19,6 +19,18 @@
         <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to get this!</button>
       {% endif %}
     </div>
+    {% set number_of_claims = item.claims|length - (1 if item.is_claimed(current_user.id) else 0) %}
+    {% if number_of_claims %}
+      <p>
+        This item has been claimed by {{ number_of_claims }}
+        {% if item.is_claimed(current_user.id) %}other{% endif %}
+        {% if number_of_claims > 1 %}
+          people.
+        {% else %}
+          person.
+        {% endif %}
+      </p>
+    {% endif %}
   </div>
   {% if item.url %}
     <div class="highlight">
