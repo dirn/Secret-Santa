@@ -1,6 +1,6 @@
 {% extends 'layouts/boilerplate.html' %}
 
-{% block title %}{{ event }} - {{ super() }}{% endblock %}
+{% block title %}{% if request.endpoint == 'events.view2' %}Stocking Stuffers - {% endif %}{{ event }} - {{ super() }}{% endblock %}
 
 {% block main %}
   <div class="xmas-header" id="container">
