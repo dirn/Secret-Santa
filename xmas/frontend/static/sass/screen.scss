@@ -183,6 +183,12 @@ h2[id] {
     margin: 9px 0 5px;
   }
 
+  p:last-child {
+    color: $background;
+    font-style: italic;
+    text-indent: 10px;
+  }
+
   & + .highlight {
     border-radius: 0;
     border-width: 0 0 1px;
