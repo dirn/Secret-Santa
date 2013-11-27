@@ -90,6 +90,7 @@
             callback = function(html) {
                 $item.find('.btn-group').hide();
                 $item.append(html);
+                initQuantity($item.find('input[name=quantity]'));
             };
         } else if ($this.hasClass('btn-update')) {
             method = 'PUT';
@@ -117,5 +118,38 @@
             type: method,
             data: data
         }).done(callback);
+    });
+
+    var initQuantity = function(this) {
+        var $this = $(this);
+
+        var $p = $('<p/>');
+        $p.insertAfter($this.parent());
+
+        var $label = $('<label for="qty-unlimited">Give me a lot!</label>');
+        $p.append($label);
+
+        var $check = $('<input type="checkbox" name="unlimited" id="qty-unlimited">');
+        $p.append($check);
+
+        $check.change(function() {
+            if ($check.is(':checked')) {
+                $check.data('original', $this.val());
+                $this.hide();
+                $this.val(0);
+            } else {
+                $this.val($check.data('original'));
+                $this.show();
+            }
+        });
+
+        if ($this.val() === '0') {
+            $check.attr('checked', true);
+            $check.change();
+        }
+    };
+
+    $('input[name=quantity]').each(function() {
+        initQuantity(this);
     });
 }(window.jQuery)

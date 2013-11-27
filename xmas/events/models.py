@@ -187,17 +187,18 @@ class Item(db.Model):
         """Claim an item."""
         if self.is_claimed(user.id):
             # Change the claim.
-            pass
-        else:
-            if self.quantity_claimed + quantity > self.quantity:
-                # Raise an exception.
-                pass
-            else:
-                db.session.query(Item).filter(Item.id == self.id).update({
-                    Item.quantity_claimed: Item.quantity_claimed + quantity,
-                })
-                self.claims.append(ItemClaim(self, user, quantity))
-                db.session.commit()
+            return
+
+        if self.quantity and self.quantity_claimed + quantity > self.quantity:
+            # Raise an exception.
+            return
+
+        db.session.query(Item).filter(Item.id == self.id).update({
+            Item.quantity_claimed: Item.quantity_claimed + quantity,
+        })
+
+        self.claims.append(ItemClaim(self, user, quantity))
+        db.session.commit()
 
     def is_claimed(self, user_id):
         return any(c.user_id == user_id for c in self.claims)
@@ -239,17 +240,19 @@ class Item(db.Model):
         """Remove a claim from an item."""
         if not self.is_claimed(user.id):
             # Raise an exception.
-            pass
-        else:
-            claim = ItemClaim.query.filter(
-                ItemClaim.item_id == self.id,
-                ItemClaim.user_id == user.id,
-            ).one()
-            db.session.query(Item).filter(Item.id == self.id).update({
-                Item.quantity_claimed: Item.quantity_claimed - claim.quantity,
-            })
-            db.session.delete(claim)
-            db.session.commit()
+            return
+
+        claim = ItemClaim.query.filter(
+            ItemClaim.item_id == self.id,
+            ItemClaim.user_id == user.id,
+        ).one()
+
+        db.session.query(Item).filter(Item.id == self.id).update({
+            Item.quantity_claimed: Item.quantity_claimed - claim.quantity,
+        })
+
+        db.session.delete(claim)
+        db.session.commit()
 
 
 class ItemClaim(db.Model):
