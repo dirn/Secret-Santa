@@ -61,7 +61,11 @@
             type: method,
             data: {id: id}
         }).done(function(html) {
-            $this.closest('.xmas-item').replaceWith(html);
+            if ($this.hasClass('xmas-unclaim') && $this.closest('.xmas-section').hasClass('xmas-claims')) {
+                $this.closest('.xmas-item').remove();
+            } else {
+                $this.closest('.xmas-item').replaceWith(html);
+            }
         });
     });
 

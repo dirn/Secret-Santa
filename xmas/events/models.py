@@ -6,7 +6,7 @@ import random
 from xmas.core import db
 from xmas.users.models import User
 
-__all__ = 'Event', 'EventRecipient', 'Item'
+__all__ = 'Event', 'EventRecipient', 'Item', 'ItemClaim'
 
 events_users = db.Table(
     'events_users',

@@ -8,7 +8,7 @@ from flask.ext.login import current_user
 from xmas.core import db
 from xmas.forms import ItemForm
 from xmas.frontend import route
-from xmas.models import Event, EventRecipient, Item
+from xmas.models import Event, EventRecipient, Item, ItemClaim
 
 __all__ = 'blueprint',
 
@@ -27,6 +27,19 @@ def claim():
 
     item.claim(current_user)
     return render_template('events/item.html', item=item)
+
+
+@route(blueprint, '/<string:slug>/shopping-list')
+def claims(slug):
+    """Return a user's shopping list for the event."""
+    event = Event.query.filter(Event.slug == slug).first_or_404()
+    claims = ItemClaim.query.filter(
+        Item.event_id == event.id,
+        ItemClaim.user_id == current_user.id,
+    )
+    return render_template(
+        'events/claims.html', event=event, claims=claims,
+    )
 
 
 @route(blueprint, '/purchase', methods=('PUT',))
