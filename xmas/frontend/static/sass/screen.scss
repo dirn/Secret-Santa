@@ -240,6 +240,16 @@ h2[id] {
   }
 }
 
+.xmas-claims {
+  padding-top: 30px;
+
+  .xmas-details {
+    &:after {
+      content: "I'm getting...";
+    }
+  }
+}
+
 .xmas-profile {
   padding-top: 30px;
 

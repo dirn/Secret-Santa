@@ -37,15 +37,18 @@
       <ul class="nav navbar-nav">
         {% if event %}
           <li{% if request.endpoint == 'events.view' %} class="active"{% endif %}>
-        <a href="{{ url_for('events.view', slug=event.slug) }}">{{ event }}</a>
-        </li>
-        <li{% if request.endpoint == 'events.view2' %} class="active"{% endif %}>
-        <a href="{{ url_for('events.view2', slug=event.slug) }}">Stocking Stuffers</a>
-        </li>
-        <li{% if request.endpoint == 'events.wishlist' %} class="active"{% endif %}>
-        <a href="{{ url_for('events.wishlist', slug=event.slug) }}">My Wishlist</a>
-        </li>
-      {% endif %}
+            <a href="{{ url_for('events.view', slug=event.slug) }}">{{ event }}</a>
+          </li>
+          <li{% if request.endpoint == 'events.view2' %} class="active"{% endif %}>
+            <a href="{{ url_for('events.view2', slug=event.slug) }}">Stocking Stuffers</a>
+          </li>
+          <li{% if request.endpoint == 'events.claims' %} class="active"{% endif %}>
+            <a href="{{ url_for('events.claims', slug=event.slug) }}">Shopping List</a>
+          </li>
+          <li{% if request.endpoint == 'events.wishlist' %} class="active"{% endif %}>
+            <a href="{{ url_for('events.wishlist', slug=event.slug) }}">My Wishlist</a>
+          </li>
+        {% endif %}
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

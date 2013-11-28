@@ -1,0 +1,25 @@
+{% extends 'layouts/boilerplate.html' %}
+
+{% block title %}Shopping List - {{ super() }}{% endblock %}
+
+{% block main %}
+  <div class="xmas-header" id="container">
+    <div class="container">
+      <h1>Shopping List</h1>
+      <p>This is your shopping list for {{ event }}.</o>
+    </div>
+  </div>
+
+  <div class="container xmas-container">
+    <div class="row">
+      <div class="col-md-12" role="main">
+        <div class="xmas-section xmas-claims">
+          {% for claim in claims %}
+            {% set item, show_recipient = claim.item, True %}
+            {% include 'events/item.html' %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
