@@ -7,7 +7,6 @@
       {% endif %}
     </h3>
     {% if item.description %}<p>{{ item.description }}</p>{% endif %}
-    {% if show_recipient %}<p>This is for {{ item.recipient.user }}.</p>{% endif %}
     <div class="btn-group">
       {% if item.is_claimed(current_user.id) %}
         <button type="button" class="btn btn-default xmas-unclaim" data-id="{{ item.id }}">Nah, I changed my mind</button>
