@@ -62,7 +62,7 @@
             data: {id: id}
         }).done(function(html) {
             if ($this.hasClass('xmas-unclaim') && $this.closest('.xmas-section').hasClass('xmas-claims')) {
-                $this.closest('.xmas-item').remove();
+                $this.closest('.xmas-item').fadeOut('slow');
             } else {
                 $this.closest('.xmas-item').replaceWith(html);
             }
