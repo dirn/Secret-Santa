@@ -52,6 +52,5 @@ class ItemForm(Form):
 
     def validate_quantity(self, field):
         """Default quantity to 1."""
-        print('Validating quantity')
         if not field.data and field.data != 0:
             field.data = 1

@@ -284,7 +284,6 @@ class ItemClaim(db.Model):
 
     def __str__(self):
         """Return the friendly representation."""
-        print(dir(self.item))
         return '{} has claimed {} for {}.'.format(
             self.user,
             self.item,
