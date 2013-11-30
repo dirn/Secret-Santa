@@ -5,6 +5,8 @@
 {% block head %}
   {{ super() }}
   {{ fixes.ie8() }}
+
+  <link rel="icon" type="image/png" href="{{ url_for('dashboard.static', filename='img/icon.png') }}">
 {% endblock %}
 
 {% block title %}Secret Santa{% endblock %}
