@@ -29,7 +29,7 @@ def create_app():
 
 def handle_error(error):
     """Return the render error template."""
-    return render_template('errors/{}.html'.format(error)), error.code
+    return render_template('errors/{}.html'.format(error.code)), error.code
 
 
 def route(blueprint, *args, **kwargs):
