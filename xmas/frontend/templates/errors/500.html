@@ -1,0 +1,25 @@
+{% extends 'layouts/boilerplate.html' %}
+
+{% block title %}Oops - {{ super() }}{% endblock %}
+
+{% block main %}
+  <div class="xmas-header" id="container">
+    <div class="container">
+      <h1>Oops!</h1>
+      <p>Something has gone wrong.</p>
+    </div>
+  </div>
+
+  <div class="container xmas-container">
+    <div class="row">
+      <div class="col-md-12" role="main">
+        <div class="xmas-error">
+          Something happened while trying to access this page. If you think this
+          is a mistake, please try again. If it keeps happening, rest assured
+          that Santa's elves have been notified and are hard at work on fixing
+          it.
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
