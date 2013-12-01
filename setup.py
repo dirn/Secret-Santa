@@ -35,7 +35,7 @@ setup(
     install_requires=[
         'Flask==0.10.1',
         'Flask-Admin==1.0.7',
-        'Flask-Bootstrap==3.0.2.2',
+        'Flask-Bootstrap==3.0.2.3',
         'Flask-Login==0.2.7',
         'Flask-Mail==0.9.0',
         'Flask-Principal==0.4.0',
@@ -49,7 +49,7 @@ setup(
         'SQLAlchemy==0.8.3',
         'WTForms==1.0.5',
         'Werkzeug==0.9.4',
-        'alembic==0.6.0',
+        'alembic==0.6.1',
         'blinker==1.3',
         'itsdangerous==0.23',
         'passlib==1.6.1',
