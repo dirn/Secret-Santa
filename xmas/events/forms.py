@@ -14,7 +14,17 @@ from xmas.validators import Slugify, Unique
 __all__ = 'EventForm', 'ItemForm'
 
 
+def default_value(default):
+    """Return a validator that sets a default value."""
+    def _default(form, field):
+        """Set the default value."""
+        if field.data is None:
+            field.data = default
+    return _default
+
+
 def select_users():
+    """Return a :class:`~sqlalchemy.orm.query.Query` of all users."""
     return User.query.order_by(User.email)
 
 
@@ -47,10 +57,7 @@ class ItemForm(Form):
     name = TextField('Name', validators=(Required(),))
     description = TextAreaField('Description', validators=(Optional(),))
     cost = FloatField('Cost', validators=(Optional(),))
-    quantity = IntegerField('Quantity', validators=(Optional(),))
+    quantity = IntegerField('Quantity', validators=(
+        default_value(1), Optional()
+    ))
     url = TextField('URL', validators=(Optional(),))
-
-    def validate_quantity(self, field):
-        """Default quantity to 1."""
-        if not field.data and field.data != 0:
-            field.data = 1
