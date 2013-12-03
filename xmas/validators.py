@@ -5,10 +5,22 @@ import re
 from sqlalchemy.orm.exc import NoResultFound
 from wtforms.validators import ValidationError
 
-__all__ = 'Slugify', 'Unique'
+__all__ = 'DefaultValue', 'Slugify', 'Unique'
 
 
-class Slugify(object):
+class DefaultValue:
+
+    """Sets a default value for a field."""
+
+    def __init__(self, default):
+        self.default = default
+
+    def __call__(self, form, field):
+        if field.data is None:
+            field.data = self.default
+
+
+class Slugify:
 
     """Makes a slug from another field."""
 
@@ -37,7 +49,7 @@ class Slugify(object):
         field.data = self.delimiter.join(words).lower()
 
 
-class Unique(object):
+class Unique:
 
     """Checks that a value is unique for a Simon model."""
 
@@ -59,3 +71,8 @@ class Unique(object):
             pass
         else:
             raise ValidationError(self.message)
+
+
+defaultvalue = DefaultValue
+slugify = Slugify
+unique = Unique
