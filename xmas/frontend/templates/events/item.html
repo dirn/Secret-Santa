@@ -12,7 +12,7 @@
     {% if item.quantity > 1 and (item.quantity_remaining or item.is_claimed(current_user.id)) %}
       <div class="form-group xmas-quantity-remaining">
         <label class="control-label" for="quantity-remaining-{{ item.id }}">
-          {{ item.recipient.user.name }} wants
+          {{ item.recipient.recipient.name }} wants
         </label>
         <input type="text" name="quantity_remaining" id="quantity-remaining-{{ item.id }}" value="{{ item.quantity_remaining }}" class="form-control" readonly>
         more.
