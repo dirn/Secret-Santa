@@ -186,6 +186,19 @@ h2[id] {
     }
   }
 
+  .xmas-quantity-claimed,
+  .xmas-quantity-remaining {
+    label {
+      font-weight: normal;
+    }
+
+    input {
+      display: inline;
+      text-align: center;
+      width: 70px;
+    }
+  }
+
   .btn-group {
     margin: 9px 0 5px;
   }

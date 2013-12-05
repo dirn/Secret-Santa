@@ -9,18 +9,9 @@ from wtforms.fields import (
 from wtforms.validators import Optional, Required
 
 from xmas.models import Event, User
-from xmas.validators import Slugify, Unique
+from xmas.validators import DefaultValue, Slugify, Unique
 
 __all__ = 'EventForm', 'ItemForm'
-
-
-def default_value(default):
-    """Return a validator that sets a default value."""
-    def _default(form, field):
-        """Set the default value."""
-        if field.data is None:
-            field.data = default
-    return _default
 
 
 def select_users():
@@ -58,6 +49,6 @@ class ItemForm(Form):
     description = TextAreaField('Description', validators=(Optional(),))
     cost = FloatField('Cost', validators=(Optional(),))
     quantity = IntegerField('Quantity', validators=(
-        default_value(1), Optional()
+        DefaultValue(1), Optional()
     ))
     url = TextField('URL', validators=(Optional(),))

@@ -13,9 +13,13 @@ from xmas.frontend import admin, filters
 __all__ = 'create_app', 'route'
 
 
-def create_app():
-    """Return the Secret Santa frontend application."""
-    app = factory.create_app(__name__, __path__)
+def create_app(settings_override=None):
+    """Return the Secret Santa frontend application.
+
+    :param settings_override: a ``dict`` of settings to override.
+
+    """
+    app = factory.create_app(__name__, __path__, settings_override)
 
     Bootstrap(app)
     admin.init_app(app)

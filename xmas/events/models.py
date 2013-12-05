@@ -186,18 +186,25 @@ class Item(db.Model):
     def claim(self, user, quantity=1):
         """Claim an item."""
         if self.is_claimed(user.id):
-            # Change the claim.
+            claim = ItemClaim.query.filter(
+                ItemClaim.item_id == self.id,
+                ItemClaim.user_id == user.id,
+            ).one()
+        else:
+            claim = ItemClaim(item=self, user=user, quantity=0)
+            self.claims.append(claim)
+
+        attempted_quantity = min(quantity - claim.quantity, self.quantity_remaining)
+        if not attempted_quantity:
+            db.session.rollback()
             return
 
-        if self.quantity and self.quantity_claimed + quantity > self.quantity:
-            # Raise an exception.
-            return
+        claim.quantity += attempted_quantity
 
         db.session.query(Item).filter(Item.id == self.id).update({
-            Item.quantity_claimed: Item.quantity_claimed + quantity,
+            Item.quantity_claimed: Item.quantity_claimed + attempted_quantity,
         })
 
-        self.claims.append(ItemClaim(self, user, quantity))
         db.session.commit()
 
     def is_claimed(self, user_id):
@@ -235,6 +242,21 @@ class Item(db.Model):
             ).one()
             claim.purchased = False
             db.session.commit()
+
+    def quantity_claimed_by_user(self, user_id):
+        """Return the quantity claimed by a user."""
+        if not self.is_claimed(user_id):
+            return 0
+
+        claim = ItemClaim.query.filter(
+            ItemClaim.item_id == self.id,
+            ItemClaim.user_id == user_id,
+        ).one()
+        return claim.quantity
+
+    @property
+    def quantity_remaining(self):
+        return self.quantity - self.quantity_claimed
 
     def unclaim(self, user):
         """Remove a claim from an item."""
