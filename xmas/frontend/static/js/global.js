@@ -40,10 +40,16 @@
     $('.xmas-section').on('click', 'button', function() {
         var $this = $(this);
         var id = $this.data('id');
+        var quantity= 1;
 
         var url = '', method = 'POST';
         if ($this.hasClass('xmas-claim')) {
             url = '/claim';
+
+            var $quantity= $this.closest('.xmas-details').find('input[name=quantity]');
+            if ($quantity.length) {
+                quantity= $quantity.val();
+            }
         } else if ($this.hasClass('xmas-unclaim')) {
             url = '/unclaim';
             // TODO: Change the method to DELETE.
@@ -59,7 +65,7 @@
         $.ajax({
             url: url,
             type: method,
-            data: {id: id}
+            data: {id: id, quantity: quantity}
         }).done(function(html) {
             if ($this.hasClass('xmas-unclaim') && $this.closest('.xmas-section').hasClass('xmas-claims')) {
                 $this.closest('.xmas-item').fadeOut('slow');
@@ -155,7 +161,7 @@
         }
     };
 
-    $('input[name=quantity]').each(function() {
+    $('.xmas-wishlist input[name=quantity]').each(function() {
         initQuantity(this);
     });
 }(window.jQuery)

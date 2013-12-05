@@ -25,7 +25,9 @@ def claim():
     if not event.active:
         abort(404)
 
-    item.claim(current_user)
+    quantity = max(int(request.form.get('quantity', 0)), 1)
+
+    item.claim(current_user, quantity)
     return render_template('events/item.html', item=item)
 
 

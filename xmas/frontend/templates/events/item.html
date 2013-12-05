@@ -6,10 +6,34 @@
         <span class="quantity">(this x {{ item.quantity }})</span>
       {% endif %}
     </h3>
+
     {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+
+    {% if item.quantity > 1 and (item.quantity_remaining or item.is_claimed(current_user.id)) %}
+      <div class="form-group xmas-quantity-remaining">
+        <label class="control-label" for="quantity-remaining-{{ item.id }}">
+          {{ item.recipient.user.name }} wants
+        </label>
+        <input type="text" name="quantity_remaining" id="quantity-remaining-{{ item.id }}" value="{{ item.quantity_remaining }}" class="form-control" readonly>
+        more.
+      </div>
+      <div class="form-group xmas-quantity-claimed">
+        <label class="control-label" for="quantity-{{ item.id }}">
+          I'm getting
+        </label>
+        {% set quantity_claimed = item.quantity_claimed_by_user(current_user.id) %}
+        <input type="number" name="quantity" id="quantity-{{ item.id }}" value="{{ quantity_claimed }}" min="1" max="{{ quantity_claimed + item.quantity_remaining }}" class="form-control">
+      </div>
+    {% endif %}
+
     <div class="btn-group">
       {% if item.is_claimed(current_user.id) %}
         <button type="button" class="btn btn-default xmas-unclaim" data-id="{{ item.id }}">Nah, I changed my mind</button>
+
+        {% if item.quantity > 1 %}
+          <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to change the number I'm getting</button>
+        {% endif %}
+
         {% if item.is_purchased(current_user.id) %}
           <button type="button" class="btn btn-default xmas-return" data-id="{{ item.id }}">I was wrong, I haven't purchased this item yet</button>
         {% else %}
@@ -19,6 +43,7 @@
         <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to get this!</button>
       {% endif %}
     </div>
+
     {% set number_of_claims = item.claims|length - (1 if item.is_claimed(current_user.id) else 0) %}
     {% if number_of_claims %}
       <p>
@@ -32,6 +57,7 @@
       </p>
     {% endif %}
   </div>
+
   {% if item.url %}
     <div class="highlight">
       <a href="{{ item.url }}" target="_blank">Show it to me</a>
