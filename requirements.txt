@@ -1,4 +1,4 @@
--e git+https://github.com/dirn/flask-security#egg=Flask-Security
+-e git+https://github.com/dirn/flask-security@hacked#egg=Flask-Security
 -e .
 
 # Development and testing requirements
