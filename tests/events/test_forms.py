@@ -4,6 +4,7 @@ import pytest
 from werkzeug.datastructures import MultiDict
 
 from tests import settings
+from xmas.core import db
 from xmas.events import forms
 from xmas.factory import create_app
 
@@ -31,16 +32,20 @@ def _test_for_required_field(app, form_class, form_data, field):
     del form_data[field]
 
     with app.test_request_context():
+        db.create_all()
         form = form_class(MultiDict(form_data))
         assert not form.validate()
         assert field in form.errors
+        db.drop_all()
 
 
 def test_eventform(app, event_dict):
     """Test `EventForm`."""
     with app.test_request_context():
+        db.create_all()
         form = forms.EventForm(MultiDict(event_dict))
         assert form.validate()
+        db.drop_all()
 
 
 def test_eventform_no_begins(app, event_dict):
@@ -70,9 +75,11 @@ def test_eventform_no_slug(app, event_dict):
     del event_dict['slug']
 
     with app.test_request_context():
+        db.create_all()
         form = forms.EventForm(MultiDict(event_dict))
         assert form.validate()
         assert form.slug.data == 'name'
+        db.drop_all()
 
 
 def test_eventform_no_suggested_limit(app, event_dict):
