@@ -1,3 +1,5 @@
+"""Tests for xmas.validators."""
+
 import pytest
 from wtforms.validators import ValidationError
 
