@@ -194,8 +194,20 @@ class Item(db.Model):
             claim = ItemClaim(item=self, user=user, quantity=0)
             self.claims.append(claim)
 
-        attempted_quantity = min(quantity - claim.quantity, self.quantity_remaining)
+        if self.quantity:
+            # If the item has a specified quantity, make sure the claim
+            # is for a portion of that quantity that is still available.
+            attempted_quantity = min(
+                quantity - claim.quantity, self.quantity_remaining
+            )
+        else:
+            # If an unlimited quantity was requested, only allow the
+            # claim to be for 1 unless the user has already claimed it.
+            # In that case, nothing additional should be claimed.
+            attempted_quantity = 0 if claim.quantity else 1
+
         if not attempted_quantity:
+            # If there is nothing to claim, get out.
             db.session.rollback()
             return
 
