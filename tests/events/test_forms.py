@@ -29,6 +29,17 @@ def event_dict():
     }
 
 
+@pytest.fixture
+def item_dict():
+    return {
+        'name': 'Name',
+        'description': 'Description',
+        'cost': 1.,
+        'quantity': 2,  # The default is 1 so use something else.
+        'url': 'http://www.example.org',
+    }
+
+
 def _test_for_required_field(app, form_class, form_data, field):
     """Test for a required field."""
     del form_data[field]
@@ -106,3 +117,62 @@ def test_eventform_no_suggested_limit(app, event_dict):
     _test_for_required_field(
         app, forms.EventForm, event_dict, 'suggested_limit'
     )
+
+
+def test_itemform(app, item_dict):
+    """Test `ItemForm`."""
+    with app.test_request_context():
+        db.create_all()
+        form = forms.ItemForm(MultiDict(item_dict))
+        assert form.validate()
+        db.drop_all()
+
+
+def test_itemform_no_cost(app, item_dict):
+    """Test `ItemForm` with no `cost`."""
+    del item_dict['cost']
+
+    with app.test_request_context():
+        db.create_all()
+        form = forms.ItemForm(MultiDict(item_dict))
+        assert form.validate()
+        db.drop_all()
+
+
+def test_itemform_no_description(app, item_dict):
+    """Test `ItemForm` with no `description`."""
+    del item_dict['description']
+
+    with app.test_request_context():
+        db.create_all()
+        form = forms.ItemForm(MultiDict(item_dict))
+        assert form.validate()
+        db.drop_all()
+
+
+def test_itemform_no_name(app, item_dict):
+    """Test `ItemForm` with no `name`."""
+    _test_for_required_field(app, forms.ItemForm, item_dict, 'name')
+
+
+def test_itemform_no_quantity(app, item_dict):
+    """Test `ItemForm` with no `quantity`."""
+    del item_dict['quantity']
+
+    with app.test_request_context():
+        db.create_all()
+        form = forms.ItemForm(MultiDict(item_dict))
+        assert form.validate()
+        assert form.quantity.data == 1
+        db.drop_all()
+
+
+def test_itemform_no_url(app, item_dict):
+    """Test `ItemForm` with no `url`."""
+    del item_dict['url']
+
+    with app.test_request_context():
+        db.create_all()
+        form = forms.ItemForm(MultiDict(item_dict))
+        assert form.validate()
+        db.drop_all()
