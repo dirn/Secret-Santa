@@ -14,8 +14,8 @@ MAIL_SERVER = _env.get('MAIL_SERVER', 'localhost')
 MAIL_PORT = int(_env.get('MAIL_PORT', 25))
 MAIL_USERNAME = _env.get('MAIL_USERNAME')
 MAIL_PASSWORD = _env.get('MAIL_PASSWORD')
-MAIL_USE_SSL = _env.get('MAIL_USE_SSL', '').lower() == 'true'
-MAIL_USE_TLS = _env.get('MAIL_USE_TLS', '').lower() == 'true'
+MAIL_USE_SSL = _env.get('MAIL_USE_SSL', '').lower() != 'false'
+MAIL_USE_TLS = _env.get('MAIL_USE_TLS', '').lower() != 'false'
 MAIL_DEBUG = _env.get('MAIL_DEBUG', '').lower() == 'true'
 DEFAULT_MAIL_SENDER = _env.get('DEFAULT_MAIL_SENDER')
 
