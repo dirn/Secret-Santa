@@ -1,11 +1,13 @@
 """Tests for xmas.events.forms."""
 
+from datetime import date
+
 import pytest
 from werkzeug.datastructures import MultiDict
 
 from tests import settings
 from xmas.core import db
-from xmas.events import forms
+from xmas.events import forms, models
 from xmas.factory import create_app
 
 
@@ -79,6 +81,23 @@ def test_eventform_no_slug(app, event_dict):
         form = forms.EventForm(MultiDict(event_dict))
         assert form.validate()
         assert form.slug.data == 'name'
+        db.drop_all()
+
+
+def test_eventform_repeated_slug(app, event_dict):
+    """Test `EventForm` with a `slug` that already exists."""
+    with app.test_request_context():
+        db.create_all()
+        event = models.Event()
+        db.session.add(event)
+        for key, value in event_dict.items():
+            if key in ('begins', 'ends'):
+                value = date(*map(int, value.split('-')))
+            setattr(event, key, value)
+        db.session.commit()
+        form = forms.EventForm(MultiDict(event_dict))
+        assert not form.validate()
+        assert 'slug' in form.errors
         db.drop_all()
 
 
