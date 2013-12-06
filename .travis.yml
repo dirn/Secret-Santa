@@ -2,6 +2,7 @@ language: python
 python:
   - 3.3
 install:
-  - pip install -r requirements.txt
+  - pip install -e git+https://github.com/dirn/flask-security#egg=hacked
+  - pip install coverage pytest
 script:
-  - tox -e py33
+  - coverage run --source xmas -m pytest
