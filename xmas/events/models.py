@@ -185,12 +185,8 @@ class Item(db.Model):
 
     def claim(self, user, quantity=1):
         """Claim an item."""
-        if self.is_claimed(user.id):
-            claim = ItemClaim.query.filter(
-                ItemClaim.item_id == self.id,
-                ItemClaim.user_id == user.id,
-            ).one()
-        else:
+        claim = self._user_claim(user.id)
+        if not claim:
             claim = ItemClaim(item=self, user=user, quantity=0)
             self.claims.append(claim)
 
@@ -226,45 +222,41 @@ class Item(db.Model):
         return any(c.user_id == user_id for c in self.claims if c.purchased)
 
     def mark_purchased(self, user):
-        if not self.is_claimed(user.id):
+        """Mark a claim as purchased."""
+        claim = self._user_claim(user.id)
+
+        if not claim:
             # Raise an exception.
             pass
-        elif self.is_purchased(user.id):
+        elif claim.purchased:
             # Raise an exception.
             pass
         else:
-            claim = ItemClaim.query.filter(
-                ItemClaim.item_id == self.id,
-                ItemClaim.user_id == user.id,
-            ).one()
             claim.purchased = True
             db.session.commit()
 
     def mark_unpurchased(self, user):
-        if not self.is_claimed(user.id):
+        """Mark a claim as not purchased."""
+        claim = self._user_claim(user.id)
+
+        if not claim:
             # Raise an exception.
             pass
-        elif not self.is_purchased(user.id):
+        elif not claim.purchased:
             # Raise an exception.
             pass
         else:
-            claim = ItemClaim.query.filter(
-                ItemClaim.item_id == self.id,
-                ItemClaim.user_id == user.id,
-            ).one()
             claim.purchased = False
             db.session.commit()
 
     def quantity_claimed_by_user(self, user_id):
         """Return the quantity claimed by a user."""
-        if not self.is_claimed(user_id):
-            return 0
+        claim = self._user_claim(user_id)
 
-        claim = ItemClaim.query.filter(
-            ItemClaim.item_id == self.id,
-            ItemClaim.user_id == user_id,
-        ).one()
-        return claim.quantity
+        if claim:
+            return claim.quantity
+        else:
+            return 0
 
     @property
     def quantity_remaining(self):
@@ -272,14 +264,10 @@ class Item(db.Model):
 
     def unclaim(self, user):
         """Remove a claim from an item."""
-        if not self.is_claimed(user.id):
-            # Raise an exception.
+        claim = self._user_claim(user.id)
+        if not claim:
+            # Raise an exception
             return
-
-        claim = ItemClaim.query.filter(
-            ItemClaim.item_id == self.id,
-            ItemClaim.user_id == user.id,
-        ).one()
 
         db.session.query(Item).filter(Item.id == self.id).update({
             Item.quantity_claimed: Item.quantity_claimed - claim.quantity,
@@ -287,6 +275,14 @@ class Item(db.Model):
 
         db.session.delete(claim)
         db.session.commit()
+
+    def _user_claim(self, user_id):
+        """Return a user's claim."""
+        if not self.is_claimed(user_id):
+            return None
+
+        claim = ItemClaim.query.filter_by(item_id=self.id, user_id=user_id)
+        return claim.first()
 
 
 class ItemClaim(db.Model):

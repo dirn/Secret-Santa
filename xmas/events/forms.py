@@ -4,7 +4,7 @@ from flask.ext.wtf import Form
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 from wtforms.fields import (
     BooleanField, DateField, FloatField, HiddenField, IntegerField,
-    SelectMultipleField, TextAreaField, TextField,
+    TextAreaField, TextField,
 )
 from wtforms.validators import Optional, Required
 
