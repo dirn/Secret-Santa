@@ -150,9 +150,9 @@ def test_item_claim(app):
         user = factories.user()
         item = factories.item(quantity=1, quantity_claimed=0)
 
-        # TODO: Add `assert item.quantity_claimed == 1`
-
         claim = item.claim(user, quantity=1)
+
+        # TODO: Add `assert item.quantity_claimed == 1`
 
         assert claim.quantity == 1
         assert claim.item_id == item.id
@@ -185,6 +185,23 @@ def test_item_claim_too_many(app):
         item = factories.item(quantity=1, quantity_claimed=0)
 
         claim = item.claim(user, quantity=10)
+
+        assert claim.quantity == 1
+
+        db.drop_all()
+
+
+def test_item_claim_unlimited(app):
+    """Test `Item.claim()` with an item with unlimited quantity."""
+    with app.test_request_context():
+        db.create_all()
+
+        user = factories.user()
+        item = factories.item(quantity=0, quantity_claimed=0)
+
+        claim = item.claim(user, quantity=1)
+
+        # TODO: Add `assert item.quantity_claimed == 1`
 
         assert claim.quantity == 1
 
