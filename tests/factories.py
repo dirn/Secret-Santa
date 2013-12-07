@@ -18,6 +18,11 @@ def event(**kwargs):
     return _factory(_models.Event, kwargs)
 
 
+def item(**kwargs):
+    """Return an instance of :class:`~xmas.models.Item`."""
+    return _factory(_models.Item, kwargs)
+
+
 def user(**kwargs):
     """Return an instance of :class:`~xmas.models.User`."""
     return _factory(_models.User, kwargs)
