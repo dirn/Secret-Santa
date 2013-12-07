@@ -5,11 +5,10 @@ from datetime import datetime, timedelta
 import pytest
 from sqlalchemy import distinct, func
 
-from tests import settings
+from tests import factories, settings
 from xmas.core import db
 from xmas.events import models
 from xmas.factory import create_app
-from xmas.users.models import User
 
 
 @pytest.fixture
@@ -28,19 +27,13 @@ def test_event_assign_recipients(app):
     with app.test_request_context():
         db.create_all()
 
-        user1 = User()
-        db.session.add(user1)
-        user2 = User()
-        db.session.add(user2)
-        user3 = User()
-        db.session.add(user3)
-        user4 = User()
-        db.session.add(user4)
+        user1 = factories.user()
+        user2 = factories.user()
+        user3 = factories.user()
+        user4 = factories.user()
 
-        event = models.Event()
-        db.session.add(event)
+        event = factories.event(number_of_recipients=2)
 
-        event.number_of_recipients = 2
         event.users.extend((user1, user2, user3, user4))
 
         event.assign_recipients()
@@ -91,16 +84,11 @@ def test_event_assign_recipients_locked(app):
     with app.test_request_context():
         db.create_all()
 
-        user1 = User()
-        db.session.add(user1)
-        user2 = User()
-        db.session.add(user2)
+        user1 = factories.user()
+        user2 = factories.user()
 
-        event = models.Event()
-        db.session.add(event)
+        event = factories.event(locked=True, number_of_recipients=1)
 
-        event.locked = True
-        event.number_of_recipients = 1
         event.users.extend((user1, user2))
 
         event.assign_recipients()
