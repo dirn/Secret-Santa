@@ -5,7 +5,7 @@ from datetime import date
 import pytest
 from werkzeug.datastructures import MultiDict
 
-from tests.fixtures import context
+from tests.fixtures import context  # Needed for Unique check.
 from xmas.core import db
 from xmas.events import forms, models
 
@@ -89,6 +89,7 @@ def test_eventform_repeated_slug(context, event_dict):
             value = date(*map(int, value.split('-')))
         setattr(event, key, value)
     db.session.commit()
+
     form = forms.EventForm(MultiDict(event_dict))
     assert not form.validate()
     assert 'slug' in form.errors
