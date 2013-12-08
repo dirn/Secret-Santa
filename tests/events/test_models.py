@@ -150,9 +150,11 @@ def test_item_claim(app):
         user = factories.user()
         item = factories.item(quantity=1, quantity_claimed=0)
 
+        db.session.commit()
+
         claim = item.claim(user, quantity=1)
 
-        # TODO: Add `assert item.quantity_claimed == 1`
+        assert item.quantity_claimed == 1
 
         assert claim.quantity == 1
         assert claim.item_id == item.id
@@ -169,6 +171,8 @@ def test_item_claim_none_available(app):
         user = factories.user()
         item = factories.item(quantity=1, quantity_claimed=1)
 
+        db.session.commit()
+
         claim = item.claim(user, quantity=1)
 
         assert claim is None
@@ -184,7 +188,11 @@ def test_item_claim_too_many(app):
         user = factories.user()
         item = factories.item(quantity=1, quantity_claimed=0)
 
+        db.session.commit()
+
         claim = item.claim(user, quantity=10)
+
+        assert item.quantity_claimed == 1
 
         assert claim.quantity == 1
 
@@ -199,9 +207,11 @@ def test_item_claim_unlimited(app):
         user = factories.user()
         item = factories.item(quantity=0, quantity_claimed=0)
 
+        db.session.commit()
+
         claim = item.claim(user, quantity=1)
 
-        # TODO: Add `assert item.quantity_claimed == 1`
+        assert item.quantity_claimed == 1
 
         assert claim.quantity == 1
 
