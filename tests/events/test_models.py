@@ -5,15 +5,10 @@ from datetime import datetime, timedelta
 import pytest
 from sqlalchemy import distinct, func
 
-from tests import factories, settings
+from tests import factories
+from tests.fixtures import context
 from xmas.core import db
 from xmas.events import models
-from xmas.factory import create_app
-
-
-@pytest.fixture
-def app():
-    return create_app(__name__, '', settings)
 
 
 @pytest.fixture(scope='module')
@@ -22,80 +17,70 @@ def today():
     return datetime.utcnow().date()
 
 
-def test_event_assign_recipients(app):
+def test_event_assign_recipients(context):
     """Test `Event.assign_recipients()`."""
-    with app.test_request_context():
-        db.create_all()
+    user1 = factories.user()
+    user2 = factories.user()
+    user3 = factories.user()
+    user4 = factories.user()
 
-        user1 = factories.user()
-        user2 = factories.user()
-        user3 = factories.user()
-        user4 = factories.user()
+    event = factories.event(number_of_recipients=2)
 
-        event = factories.event(number_of_recipients=2)
+    event.users.extend((user1, user2, user3, user4))
 
-        event.users.extend((user1, user2, user3, user4))
+    event.assign_recipients()
 
-        event.assign_recipients()
+    # After assigning recipients, the event should be locked.
+    assert event.locked
 
-        # After assigning recipients, the event should be locked.
-        assert event.locked
+    # Check the number of records.
+    expected = len(event.users) * event.number_of_recipients
+    actual = models.EventRecipient.query.count()
+    assert actual == expected
 
-        # Check the number of records.
-        expected = len(event.users) * event.number_of_recipients
-        actual = models.EventRecipient.query.count()
+    # Check the number of users.
+    expected = len(event.users)
+    actual = db.session.query(
+        func.count(distinct(models.EventRecipient.user_id))
+    ).first()[0]
+    assert actual == expected
+
+    # Check the number of recipients.
+    expected = len(event.users)
+    actual = db.session.query(
+        func.count(distinct(models.EventRecipient.recipient_id))
+    ).first()[0]
+    assert actual == expected
+
+    # Check that each user has the correct number of recipients.
+    expected = event.number_of_recipients
+    users = db.session.query(
+        func.count(models.EventRecipient.recipient_id)
+    ).group_by(models.EventRecipient.user_id).all()
+    for actual, *_ in users:
         assert actual == expected
 
-        # Check the number of users.
-        expected = len(event.users)
-        actual = db.session.query(
-            func.count(distinct(models.EventRecipient.user_id))
-        ).first()[0]
+    # Check that each recipient has the correct number of users.
+    expected = event.number_of_recipients
+    recipients = db.session.query(
+        func.count(models.EventRecipient.user_id)
+    ).group_by(models.EventRecipient.recipient_id).all()
+    for actual, *_ in recipients:
         assert actual == expected
 
-        # Check the number of recipients.
-        expected = len(event.users)
-        actual = db.session.query(
-            func.count(distinct(models.EventRecipient.recipient_id))
-        ).first()[0]
-        assert actual == expected
 
-        # Check that each user has the correct number of recipients.
-        expected = event.number_of_recipients
-        users = db.session.query(
-            func.count(models.EventRecipient.recipient_id)
-        ).group_by(models.EventRecipient.user_id).all()
-        for actual, *_ in users:
-            assert actual == expected
-
-        # Check that each recipient has the correct number of users.
-        expected = event.number_of_recipients
-        recipients = db.session.query(
-            func.count(models.EventRecipient.user_id)
-        ).group_by(models.EventRecipient.recipient_id).all()
-        for actual, *_ in recipients:
-            assert actual == expected
-
-        db.drop_all()
-
-
-def test_event_assign_recipients_locked(app):
+def test_event_assign_recipients_locked(context):
     """Test `Event.assign_recipients()` with a locked event."""
-    with app.test_request_context():
-        db.create_all()
+    user1 = factories.user()
+    user2 = factories.user()
 
-        user1 = factories.user()
-        user2 = factories.user()
+    event = factories.event(locked=True, number_of_recipients=1)
 
-        event = factories.event(locked=True, number_of_recipients=1)
+    event.users.extend((user1, user2))
 
-        event.users.extend((user1, user2))
+    event.assign_recipients()
 
-        event.assign_recipients()
-
-        assert not models.EventRecipient.query.all()
-
-        db.drop_all()
+    assert not models.EventRecipient.query.all()
 
 
 def test_event_is_still_active(today):
@@ -142,245 +127,175 @@ def test_event_lock():
     assert event.locked
 
 
-def test_item_claim(app):
+def test_item_claim(context):
     """Test `Item.claim()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item(quantity=1)
 
-        user = factories.user()
-        item = factories.item(quantity=1)
+    db.session.commit()
 
-        db.session.commit()
+    claim = item.claim(user, quantity=1)
 
-        claim = item.claim(user, quantity=1)
+    assert item.quantity_claimed == 1
 
-        assert item.quantity_claimed == 1
-
-        assert claim.quantity == 1
-        assert claim.item_id == item.id
-        assert claim.user_id == user.id
-
-        db.drop_all()
+    assert claim.quantity == 1
+    assert claim.item_id == item.id
+    assert claim.user_id == user.id
 
 
-def test_item_claim_none_available(app):
+def test_item_claim_none_available(context):
     """Test `Item.claim()` with no quantity_remaining."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item(quantity=1, quantity_claimed=1)
 
-        user = factories.user()
-        item = factories.item(quantity=1, quantity_claimed=1)
+    db.session.commit()
 
-        db.session.commit()
+    claim = item.claim(user, quantity=1)
 
-        claim = item.claim(user, quantity=1)
-
-        assert claim is None
-
-        db.drop_all()
+    assert claim is None
 
 
-def test_item_claim_too_many(app):
+def test_item_claim_too_many(context):
     """Test `Item.claim()` with a quantity that's too large."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item(quantity=1)
 
-        user = factories.user()
-        item = factories.item(quantity=1)
+    db.session.commit()
 
-        db.session.commit()
+    claim = item.claim(user, quantity=10)
 
-        claim = item.claim(user, quantity=10)
+    assert item.quantity_claimed == 1
 
-        assert item.quantity_claimed == 1
-
-        assert claim.quantity == 1
-
-        db.drop_all()
+    assert claim.quantity == 1
 
 
-def test_item_claim_unlimited(app):
+def test_item_claim_unlimited(context):
     """Test `Item.claim()` with an item with unlimited quantity."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item(quantity=0)
 
-        user = factories.user()
-        item = factories.item(quantity=0)
+    db.session.commit()
 
-        db.session.commit()
+    claim = item.claim(user, quantity=1)
 
-        claim = item.claim(user, quantity=1)
+    assert item.quantity_claimed == 1
 
-        assert item.quantity_claimed == 1
-
-        assert claim.quantity == 1
-
-        db.drop_all()
+    assert claim.quantity == 1
 
 
-def test_item_is_claimed(app):
+def test_item_is_claimed(context):
     """Test `Item.is_claimed()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.claim(user, quantity=1)
 
-        item.claim(user, quantity=1)
-
-        assert item.is_claimed(user.id)
-
-        db.drop_all()
+    assert item.is_claimed(user.id)
 
 
-def test_item_is_claimed_unclaimed(app):
+def test_item_is_claimed_unclaimed(context):
     """Test `Item.is_claimed()` with an unclaimed user."""
-    with app.test_request_context():
-        db.create_all()
+    user1 = factories.user()
+    user2 = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user1 = factories.user()
-        user2 = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.claim(user1, quantity=1)
 
-        item.claim(user1, quantity=1)
-
-        assert not item.is_claimed(user2.id)
-
-        db.drop_all()
+    assert not item.is_claimed(user2.id)
 
 
-def test_item_is_purchased(app):
+def test_item_is_purchased(context):
     """Test `Item.is_purchased()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.claim(user, quantity=1)
+    item.mark_purchased(user)
 
-        item.claim(user, quantity=1)
-        item.mark_purchased(user)
-
-        assert item.is_purchased(user.id)
-
-        db.drop_all()
+    assert item.is_purchased(user.id)
 
 
-def test_item_is_purchased_unclaimed(app):
+def test_item_is_purchased_unclaimed(context):
     """Test `Item.is_purchased()` with an unclaimed item."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.mark_purchased(user)
 
-        item.mark_purchased(user)
-
-        assert not item.is_purchased(user.id)
-
-        db.drop_all()
+    assert not item.is_purchased(user.id)
 
 
-def test_item_mark_purchased(app):
+def test_item_mark_purchased(context):
     """Test `Item.mark_purchased()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    claim = item.claim(user, quantity=1)
+    item.mark_purchased(user)
 
-        claim = item.claim(user, quantity=1)
-        item.mark_purchased(user)
-
-        assert claim.purchased
-
-        db.drop_all()
+    assert claim.purchased
 
 
-def test_item_mark_unpurchased(app):
+def test_item_mark_unpurchased(context):
     """Test `Item.mark_unpurchased()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    claim = item.claim(user, quantity=1)
+    claim.purchased = True
+    item.mark_unpurchased(user)
 
-        claim = item.claim(user, quantity=1)
-        claim.purchased = True
-        item.mark_unpurchased(user)
-
-        assert not claim.purchased
-
-        db.drop_all()
+    assert not claim.purchased
 
 
-def test_item_quantity_claimed_by_user(app):
+def test_item_quantity_claimed_by_user(context):
     """Test `Item.quantity_claimed_by_user()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.claim(user, quantity=1)
 
-        item.claim(user, quantity=1)
-
-        assert item.quantity_claimed_by_user(user.id) == 1
-
-        db.drop_all()
+    assert item.quantity_claimed_by_user(user.id) == 1
 
 
-def test_item_quantity_claimed_by_user_unclaimed(app):
+def test_item_quantity_claimed_by_user_unclaimed(context):
     """Test `Item.quantity_claimed_by_user()` by an unclaimed user."""
-    with app.test_request_context():
-        db.create_all()
+    user1 = factories.user()
+    user2 = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user1 = factories.user()
-        user2 = factories.user()
-        item = factories.item()
-        db.session.commit()
+    item.claim(user1, quantity=1)
 
-        item.claim(user1, quantity=1)
-
-        assert item.quantity_claimed_by_user(user2.id) == 0
-
-        db.drop_all()
+    assert item.quantity_claimed_by_user(user2.id) == 0
 
 
-def test_item_unclaim(app):
+def test_item_unclaim(context):
     """Test `Item.unclaim()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item(quantity=10)
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item(quantity=10)
-        db.session.commit()
+    item.claim(user, quantity=5)
+    item.unclaim(user)
 
-        item.claim(user, quantity=5)
-        item.unclaim(user)
-
-        assert item.quantity_claimed == 0
-
-        db.drop_all()
+    assert item.quantity_claimed == 0
 
 
-def test_item__user_claim(app):
+def test_item__user_claim(context):
     """Test `Item._user_claim()`."""
-    with app.test_request_context():
-        db.create_all()
+    user = factories.user()
+    item = factories.item()
+    db.session.commit()
 
-        user = factories.user()
-        item = factories.item()
-        db.session.commit()
+    expected = item.claim(user, quantity=1)
+    actual = item._user_claim(user.id)
 
-        expected = item.claim(user, quantity=1)
-        actual = item._user_claim(user.id)
-
-        assert actual == expected
-
-        db.drop_all()
+    assert actual == expected
