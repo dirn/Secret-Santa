@@ -1,12 +1,14 @@
 """Tests for xmas.users.models."""
 
+import pytest
+
 from tests import factories
-from tests.fixtures import context
 from xmas.core import db
 from xmas.users import models
 
 
-def test_user___eq__(context):
+@pytest.mark.usefixtures('context')
+def test_user___eq__():
     """Test `User.__eq__()`."""
     user1 = factories.user()
     db.session.commit()
@@ -14,14 +16,16 @@ def test_user___eq__(context):
     assert user1 == user2
 
 
-def test_user___eq___no_id(context):
+@pytest.mark.usefixtures('context')
+def test_user___eq___no_id():
     """Test `User.__eq__()` with no `id`."""
     user1 = factories.user()
     user2 = factories.user()
     assert user1 == user2
 
 
-def test_user___eq___unequal(context):
+@pytest.mark.usefixtures('context')
+def test_user___eq___unequal():
     """Test `User.__eq__()` with different users."""
     user1 = factories.user()
     user2 = factories.user()
@@ -30,7 +34,8 @@ def test_user___eq___unequal(context):
     assert not (user1 == user2)
 
 
-def test_user___hash__(context):
+@pytest.mark.usefixtures('context')
+def test_user___hash__():
     """Test `User.__hash__()`."""
     user1 = factories.user()
     user2 = factories.user()
@@ -40,7 +45,8 @@ def test_user___hash__(context):
     assert hash(user1) != hash(user2)
 
 
-def test_user___ne__(context):
+@pytest.mark.usefixtures('context')
+def test_user___ne__():
     """Test `User.__ne__()`."""
     user1 = factories.user()
     user2 = factories.user()
@@ -48,7 +54,8 @@ def test_user___ne__(context):
     assert user1 != user2
 
 
-def test_user___ne___equal(context):
+@pytest.mark.usefixtures('context')
+def test_user___ne___equal():
     """Test `User.__ne__()` with the same user."""
     user1 = factories.user()
     db.session.commit()
@@ -57,7 +64,8 @@ def test_user___ne___equal(context):
     assert not (user1 != user2)
 
 
-def test_user___ne___no_id(context):
+@pytest.mark.usefixtures('context')
+def test_user___ne___no_id():
     """Test `User.__ne__()` with no `id`."""
     user1 = factories.user()
     user2 = factories.user()

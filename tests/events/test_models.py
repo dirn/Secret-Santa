@@ -6,7 +6,6 @@ import pytest
 from sqlalchemy import distinct, func
 
 from tests import factories
-from tests.fixtures import context
 from xmas.core import db
 from xmas.events import models
 
@@ -17,7 +16,8 @@ def today():
     return datetime.utcnow().date()
 
 
-def test_event_assign_recipients(context):
+@pytest.mark.usefixtures('context')
+def test_event_assign_recipients():
     """Test `Event.assign_recipients()`."""
     user1 = factories.user()
     user2 = factories.user()
@@ -69,7 +69,8 @@ def test_event_assign_recipients(context):
         assert actual == expected
 
 
-def test_event_assign_recipients_locked(context):
+@pytest.mark.usefixtures('context')
+def test_event_assign_recipients_locked():
     """Test `Event.assign_recipients()` with a locked event."""
     user1 = factories.user()
     user2 = factories.user()
@@ -127,7 +128,8 @@ def test_event_lock():
     assert event.locked
 
 
-def test_item_claim(context):
+@pytest.mark.usefixtures('context')
+def test_item_claim():
     """Test `Item.claim()`."""
     user = factories.user()
     item = factories.item(quantity=1)
@@ -143,7 +145,8 @@ def test_item_claim(context):
     assert claim.user_id == user.id
 
 
-def test_item_claim_none_available(context):
+@pytest.mark.usefixtures('context')
+def test_item_claim_none_available():
     """Test `Item.claim()` with no quantity_remaining."""
     user = factories.user()
     item = factories.item(quantity=1, quantity_claimed=1)
@@ -155,7 +158,8 @@ def test_item_claim_none_available(context):
     assert claim is None
 
 
-def test_item_claim_too_many(context):
+@pytest.mark.usefixtures('context')
+def test_item_claim_too_many():
     """Test `Item.claim()` with a quantity that's too large."""
     user = factories.user()
     item = factories.item(quantity=1)
@@ -169,7 +173,8 @@ def test_item_claim_too_many(context):
     assert claim.quantity == 1
 
 
-def test_item_claim_unlimited(context):
+@pytest.mark.usefixtures('context')
+def test_item_claim_unlimited():
     """Test `Item.claim()` with an item with unlimited quantity."""
     user = factories.user()
     item = factories.item(quantity=0)
@@ -183,7 +188,8 @@ def test_item_claim_unlimited(context):
     assert claim.quantity == 1
 
 
-def test_item_is_claimed(context):
+@pytest.mark.usefixtures('context')
+def test_item_is_claimed():
     """Test `Item.is_claimed()`."""
     user = factories.user()
     item = factories.item()
@@ -194,7 +200,8 @@ def test_item_is_claimed(context):
     assert item.is_claimed(user.id)
 
 
-def test_item_is_claimed_unclaimed(context):
+@pytest.mark.usefixtures('context')
+def test_item_is_claimed_unclaimed():
     """Test `Item.is_claimed()` with an unclaimed user."""
     user1 = factories.user()
     user2 = factories.user()
@@ -206,7 +213,8 @@ def test_item_is_claimed_unclaimed(context):
     assert not item.is_claimed(user2.id)
 
 
-def test_item_is_purchased(context):
+@pytest.mark.usefixtures('context')
+def test_item_is_purchased():
     """Test `Item.is_purchased()`."""
     user = factories.user()
     item = factories.item()
@@ -218,7 +226,8 @@ def test_item_is_purchased(context):
     assert item.is_purchased(user.id)
 
 
-def test_item_is_purchased_unclaimed(context):
+@pytest.mark.usefixtures('context')
+def test_item_is_purchased_unclaimed():
     """Test `Item.is_purchased()` with an unclaimed item."""
     user = factories.user()
     item = factories.item()
@@ -229,7 +238,8 @@ def test_item_is_purchased_unclaimed(context):
     assert not item.is_purchased(user.id)
 
 
-def test_item_mark_purchased(context):
+@pytest.mark.usefixtures('context')
+def test_item_mark_purchased():
     """Test `Item.mark_purchased()`."""
     user = factories.user()
     item = factories.item()
@@ -241,7 +251,8 @@ def test_item_mark_purchased(context):
     assert claim.purchased
 
 
-def test_item_mark_unpurchased(context):
+@pytest.mark.usefixtures('context')
+def test_item_mark_unpurchased():
     """Test `Item.mark_unpurchased()`."""
     user = factories.user()
     item = factories.item()
@@ -254,7 +265,8 @@ def test_item_mark_unpurchased(context):
     assert not claim.purchased
 
 
-def test_item_quantity_claimed_by_user(context):
+@pytest.mark.usefixtures('context')
+def test_item_quantity_claimed_by_user():
     """Test `Item.quantity_claimed_by_user()`."""
     user = factories.user()
     item = factories.item()
@@ -265,7 +277,8 @@ def test_item_quantity_claimed_by_user(context):
     assert item.quantity_claimed_by_user(user.id) == 1
 
 
-def test_item_quantity_claimed_by_user_unclaimed(context):
+@pytest.mark.usefixtures('context')
+def test_item_quantity_claimed_by_user_unclaimed():
     """Test `Item.quantity_claimed_by_user()` by an unclaimed user."""
     user1 = factories.user()
     user2 = factories.user()
@@ -277,7 +290,8 @@ def test_item_quantity_claimed_by_user_unclaimed(context):
     assert item.quantity_claimed_by_user(user2.id) == 0
 
 
-def test_item_unclaim(context):
+@pytest.mark.usefixtures('context')
+def test_item_unclaim():
     """Test `Item.unclaim()`."""
     user = factories.user()
     item = factories.item(quantity=10)
@@ -289,7 +303,8 @@ def test_item_unclaim(context):
     assert item.quantity_claimed == 0
 
 
-def test_item__user_claim(context):
+@pytest.mark.usefixtures('context')
+def test_item__user_claim():
     """Test `Item._user_claim()`."""
     user = factories.user()
     item = factories.item()
