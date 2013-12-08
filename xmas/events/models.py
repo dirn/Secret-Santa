@@ -204,9 +204,9 @@ class Item(db.Model):
 
         claim.quantity += attempted_quantity
 
-        db.session.query(Item).filter(Item.id == self.id).update({
-            Item.quantity_claimed: Item.quantity_claimed + attempted_quantity,
-        })
+        self.quantity_claimed = (
+            Item.__table__.c.quantity_claimed + attempted_quantity
+        )
 
         db.session.commit()
 
@@ -266,9 +266,9 @@ class Item(db.Model):
             # Raise an exception
             return
 
-        db.session.query(Item).filter(Item.id == self.id).update({
-            Item.quantity_claimed: Item.quantity_claimed - claim.quantity,
-        })
+        self.quantity_claimed = (
+            Item.__table__.c.quantity_claimed - claim.quantity
+        )
 
         db.session.delete(claim)
         db.session.commit()
