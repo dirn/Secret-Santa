@@ -25,6 +25,7 @@ def test_slugify():
     actual = utils.slugify('Two Words')
     assert actual == expected
 
+
 def test_slugify_edges():
     """Test `slugify()` for some edge cases."""
     expected = 'before'

@@ -65,7 +65,7 @@ def test_event_assign_recipients():
     recipients = db.session.query(
         func.count(models.EventRecipient.user_id)
     ).group_by(models.EventRecipient.recipient_id).all()
-    for actual, *_ in recipients:
+    for actual, *_ in recipients:  # NOQA
         assert actual == expected
 
 
