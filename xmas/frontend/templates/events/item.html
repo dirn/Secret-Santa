@@ -1,5 +1,5 @@
 <div class="xmas-item">
-  <div class="xmas-details">
+  <div class="xmas-details{% if item.is_claimed(current_user.id) %} claimed{% endif %}">
     <h3>
       {{ item }}
       {% if item.quantity > 1 %}
