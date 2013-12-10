@@ -1,6 +1,7 @@
 """Application helper utilities."""
 
 import importlib
+from operator import truth
 import pkgutil
 import re
 
@@ -24,4 +25,4 @@ def register_blueprints(app, package_name, package_path):
 def slugify(value, delimiter='-'):
     """Return a slugified version of the specified string."""
     words = slug_pattern.split(value)
-    return delimiter.join(words).lower()
+    return delimiter.join(filter(truth, words)).lower()

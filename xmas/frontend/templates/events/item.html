@@ -1,6 +1,9 @@
 <div class="xmas-item">
-  <div class="xmas-details">
+  <div class="xmas-details{% if item.is_claimed(current_user.id) %} claimed{% endif %}">
     <h3>
+      {% if show_recipient %}
+        {{ item.recipient.recipient.name }} wants
+      {% endif %}
       {{ item }}
       {% if item.quantity > 1 %}
         <span class="quantity">(this x {{ item.quantity }})</span>

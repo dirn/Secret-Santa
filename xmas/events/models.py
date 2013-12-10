@@ -59,11 +59,6 @@ class Event(db.Model):
         recipients = {
             users[x]: users[x + 1:x + maximum + 1] for x in range(total)
         }
-        # givers = {
-        #     k2: [k for k, v in recipients.items() if k2 in v] for k2 in {
-        #         a for b in recipients.values() for a in b
-        #     }
-        # }
 
         for k, v in recipients.items():
             k.event_recipients = [EventRecipient(self, k, u) for u in v]
@@ -205,15 +200,17 @@ class Item(db.Model):
         if not attempted_quantity:
             # If there is nothing to claim, get out.
             db.session.rollback()
-            return
+            return None
 
         claim.quantity += attempted_quantity
 
-        db.session.query(Item).filter(Item.id == self.id).update({
-            Item.quantity_claimed: Item.quantity_claimed + attempted_quantity,
-        })
+        self.quantity_claimed = (
+            Item.__table__.c.quantity_claimed + attempted_quantity
+        )
 
         db.session.commit()
+
+        return claim
 
     def is_claimed(self, user_id):
         return any(c.user_id == user_id for c in self.claims)
@@ -269,9 +266,9 @@ class Item(db.Model):
             # Raise an exception
             return
 
-        db.session.query(Item).filter(Item.id == self.id).update({
-            Item.quantity_claimed: Item.quantity_claimed - claim.quantity,
-        })
+        self.quantity_claimed = (
+            Item.__table__.c.quantity_claimed - claim.quantity
+        )
 
         db.session.delete(claim)
         db.session.commit()

@@ -186,6 +186,14 @@ h2[id] {
     }
   }
 
+  &.claimed {
+    background-color: #fcd5d5;
+
+    &:after, h3 .quantity {
+      color: #666;
+    }
+  }
+
   .xmas-quantity-claimed,
   .xmas-quantity-remaining {
     label {

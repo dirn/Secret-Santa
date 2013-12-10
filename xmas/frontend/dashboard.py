@@ -19,7 +19,7 @@ blueprint = Blueprint(
 def index():
     """Return the dashboard index."""
     events = Event.query.filter(
-        Event.active == True,
+        Event.active == True,  # NOQA
     ).order_by(
         Event.begins,
         Event.ends,
