@@ -1,28 +1,43 @@
 """Factory for populating models for tests."""
 
-from xmas import models as _models
-from xmas.core import db as _db
+import factory
+from factory.alchemy import SQLAlchemyModelFactory
+
+from xmas import models
+from xmas.core import db
+from xmas.utils import slugify
 
 
-def _factory(cls, kwargs):
-    """Return an instance of ``cls``."""
-    obj = cls()
-    for key, value in kwargs.items():
-        setattr(obj, key, value)
-    _db.session.add(obj)
-    return obj
+class Event(SQLAlchemyModelFactory):
 
-
-def event(**kwargs):
     """Return an instance of :class:`~xmas.models.Event`."""
-    return _factory(_models.Event, kwargs)
+
+    FACTORY_FOR = models.Event
+    FACTORY_SESSION = db.session
+
+    id = factory.Sequence(lambda x: x)
+    name = factory.Sequence(lambda x: 'Event {}'.format(x))
+    slug = factory.LazyAttribute(lambda obj: slugify(obj.name))
 
 
-def item(**kwargs):
+class Item(SQLAlchemyModelFactory):
+
     """Return an instance of :class:`~xmas.models.Item`."""
-    return _factory(_models.Item, kwargs)
+
+    FACTORY_FOR = models.Item
+    FACTORY_SESSION = db.session
+
+    id = factory.Sequence(lambda x: x)
+    name = factory.Sequence(lambda x: 'Item {}'.format(x))
 
 
-def user(**kwargs):
+class User(SQLAlchemyModelFactory):
+
     """Return an instance of :class:`~xmas.models.User`."""
-    return _factory(_models.User, kwargs)
+
+    FACTORY_FOR = models.User
+    FACTORY_SESSION = db.session
+
+    id = factory.Sequence(lambda x: x)
+    name = factory.Sequence(lambda x: 'User {}'.format(x))
+    email = factory.Sequence(lambda x: 'email-{}@example.org'.format(x))
