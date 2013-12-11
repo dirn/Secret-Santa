@@ -42,7 +42,7 @@
         {% else %}
           <button type="button" class="btn btn-default xmas-purchase" data-id="{{ item.id }}">I've purchased this item</button>
         {% endif %}
-      {% elif item.quantity == 0 or item.quantity_claimed == 0 %}
+      {% elif item.quantity == 0 or item.quantity_remaining > 0 %}
         <button type="button" class="btn btn-default xmas-claim" data-id="{{ item.id }}">I want to get this!</button>
       {% endif %}
     </div>
