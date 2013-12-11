@@ -257,7 +257,12 @@ class Item(db.Model):
 
     @property
     def quantity_remaining(self):
-        return self.quantity - self.quantity_claimed
+        if self.quantity == 0:
+            # If there is an unlimited quantity, always specify 1.
+            return 1
+        else:
+            # Otherwise do the math.
+            return self.quantity - self.quantity_claimed
 
     def unclaim(self, user):
         """Remove a claim from an item."""
