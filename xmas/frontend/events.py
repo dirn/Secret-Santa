@@ -44,6 +44,35 @@ def claims(slug):
     )
 
 
+@route(
+    blueprint,
+    '/<string:slug>/wishlist/<int:id_>',
+    methods=('DELETE', 'GET', 'POST', 'PUT'),
+)
+def edit_wishlist(slug, id_):
+    """Return an editable item."""
+    event = Event.query.filter(Event.slug == slug).first_or_404()
+    item = Item.query.filter(Item.id == id_).first_or_404()
+
+    if item.user_id != current_user.id:
+        abort(403)
+
+    if request.method == 'DELETE':
+        db.session.delete(item)
+        db.session.commit()
+        return 'OK'
+
+    form = ItemForm(request.form, item)
+    if form.validate_on_submit():
+        form.populate_obj(item)
+        db.session.commit()
+        if request.method == 'PUT':
+            return 'OK'
+        return redirect(url_for('events.wishlist', slug=slug))
+
+    return render_template('events/edit_item.html', event=event, form=form)
+
+
 @route(blueprint, '/purchase', methods=('PUT',))
 def purchase():
     """Make an item as purchased."""
@@ -116,38 +145,9 @@ def view(slug, show_all=False):
 
 
 @route(blueprint, '/<string:slug>/stocking-stuffers')
-def view2(slug):
+def view_all_users(slug):
     """Return the detailed view of the event with all other users."""
     return view(slug, show_all=True)
-
-
-@route(
-    blueprint,
-    '/<string:slug>/wishlist/<int:id_>',
-    methods=('DELETE', 'GET', 'POST', 'PUT'),
-)
-def edit_wishlist(slug, id_):
-    """Return an editable item."""
-    event = Event.query.filter(Event.slug == slug).first_or_404()
-    item = Item.query.filter(Item.id == id_).first_or_404()
-
-    if item.user_id != current_user.id:
-        abort(403)
-
-    if request.method == 'DELETE':
-        db.session.delete(item)
-        db.session.commit()
-        return 'OK'
-
-    form = ItemForm(request.form, item)
-    if form.validate_on_submit():
-        form.populate_obj(item)
-        db.session.commit()
-        if request.method == 'PUT':
-            return 'OK'
-        return redirect(url_for('events.wishlist', slug=slug))
-
-    return render_template('events/edit_item.html', event=event, form=form)
 
 
 @route(blueprint, '/<string:slug>/wishlist', methods=('GET', 'POST'))
@@ -170,9 +170,8 @@ def wishlist(slug):
         db.session.commit()
         return redirect(url_for('events.wishlist', slug=slug))
 
-    wishlist = Item.query.filter(
-        Item.event_id == event.id, Item.user_id == current_user.id,
-    ).all()
+    wishlist = Item.query.filter_by(event_id=event.id, user_id=current_user.id)
+    wishlist = wishlist.order_by(Item.name)
     return render_template(
         'events/wishlist.html', event=event, form=form, items=wishlist,
     )
