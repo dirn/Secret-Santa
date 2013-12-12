@@ -119,6 +119,7 @@ class EventRecipient(db.Model):
     )
     wishlist = db.relationship(
         'Item',
+        order_by='Item.name',
         primaryjoin='and_(EventRecipient.event_id == Item.event_id, '
                     '     EventRecipient.recipient_id == Item.user_id)',
         backref=db.backref('wishlist', lazy='dynamic', uselist=True),

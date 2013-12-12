@@ -170,9 +170,8 @@ def wishlist(slug):
         db.session.commit()
         return redirect(url_for('events.wishlist', slug=slug))
 
-    wishlist = Item.query.filter(
-        Item.event_id == event.id, Item.user_id == current_user.id,
-    ).all()
+    wishlist = Item.query.filter_by(event_id=event.id, user_id=current_user.id)
+    wishlist = wishlist.order_by(Item.name)
     return render_template(
         'events/wishlist.html', event=event, form=form, items=wishlist,
     )
