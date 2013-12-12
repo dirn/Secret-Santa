@@ -88,13 +88,18 @@ def unclaim():
 
 
 @route(blueprint, '/<string:slug>')
-def view(slug):
+def view(slug, show_all=False):
     """Return the detailed view of the event."""
-    event = Event.query.filter(Event.slug == slug).first_or_404()
-    recipients = EventRecipient.query.filter(
-        EventRecipient.event_id == event.id,
-        EventRecipient.user_id == current_user.id,
-    )
+    event = Event.query.filter_by(slug=slug).first_or_404()
+    recipients = EventRecipient.query.filter_by(event=event)
+    if show_all:
+        recipients = recipients.filter(
+            EventRecipient.recipient != current_user
+        ).distinct(
+            EventRecipient.event_id, EventRecipient.recipient_id
+        )
+    else:
+        recipients = recipients.filter_by(user=current_user)
     return render_template(
         'events/view.html', event=event, recipients=recipients
     )
@@ -102,15 +107,8 @@ def view(slug):
 
 @route(blueprint, '/<string:slug>/stocking-stuffers')
 def view2(slug):
-    """Return the detailed view of the event."""
-    event = Event.query.filter(Event.slug == slug).first_or_404()
-    recipients = EventRecipient.query.filter(
-        EventRecipient.event_id == event.id,
-        EventRecipient.recipient_id != current_user.id,
-    ).distinct(EventRecipient.event_id, EventRecipient.recipient_id)
-    return render_template(
-        'events/view.html', event=event, recipients=recipients
-    )
+    """Return the detailed view of the event with all other users."""
+    return view(slug, show_all=True)
 
 
 @route(
