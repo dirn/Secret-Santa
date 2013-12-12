@@ -91,15 +91,25 @@ def unclaim():
 def view(slug, show_all=False):
     """Return the detailed view of the event."""
     event = Event.query.filter_by(slug=slug).first_or_404()
+
+    # Load all of the event's recipients.
     recipients = EventRecipient.query.filter_by(event=event)
     if show_all:
+        # If showing all recipients, filter out the current user and get
+        # a unique list.
         recipients = recipients.filter(
             EventRecipient.recipient != current_user
         ).distinct(
             EventRecipient.event_id, EventRecipient.recipient_id
         )
     else:
+        # Otherwise get only the recipients assigned to the current
+        # user.
         recipients = recipients.filter_by(user=current_user)
+
+    # Sort the recipients by name
+    recipients = sorted(recipients, key=lambda r: r.recipient.name)
+
     return render_template(
         'events/view.html', event=event, recipients=recipients
     )
