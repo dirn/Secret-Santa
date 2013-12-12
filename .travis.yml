@@ -3,7 +3,7 @@ python:
   - 3.3
 install:
   - pip install -e git+https://github.com/dirn/flask-security#egg=hacked
-  - pip install coverage pytest
+  - pip install coverage factory_boy==2.2.1 pytest
   - pip install .
 script:
   - coverage run --source xmas -m pytest

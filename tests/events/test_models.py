@@ -19,12 +19,12 @@ def today():
 @pytest.mark.usefixtures('context')
 def test_event_assign_recipients():
     """Test `Event.assign_recipients()`."""
-    user1 = factories.user()
-    user2 = factories.user()
-    user3 = factories.user()
-    user4 = factories.user()
+    user1 = factories.User()
+    user2 = factories.User()
+    user3 = factories.User()
+    user4 = factories.User()
 
-    event = factories.event(number_of_recipients=2)
+    event = factories.Event(number_of_recipients=2)
 
     event.users.extend((user1, user2, user3, user4))
 
@@ -72,10 +72,10 @@ def test_event_assign_recipients():
 @pytest.mark.usefixtures('context')
 def test_event_assign_recipients_locked():
     """Test `Event.assign_recipients()` with a locked event."""
-    user1 = factories.user()
-    user2 = factories.user()
+    user1 = factories.User()
+    user2 = factories.User()
 
-    event = factories.event(locked=True, number_of_recipients=1)
+    event = factories.Event(locked=True, number_of_recipients=1)
 
     event.users.extend((user1, user2))
 
@@ -131,8 +131,8 @@ def test_event_lock():
 @pytest.mark.usefixtures('context')
 def test_item_claim():
     """Test `Item.claim()`."""
-    user = factories.user()
-    item = factories.item(quantity=1)
+    user = factories.User()
+    item = factories.Item(quantity=1)
 
     db.session.commit()
 
@@ -148,8 +148,8 @@ def test_item_claim():
 @pytest.mark.usefixtures('context')
 def test_item_claim_none_available():
     """Test `Item.claim()` with no quantity_remaining."""
-    user = factories.user()
-    item = factories.item(quantity=1, quantity_claimed=1)
+    user = factories.User()
+    item = factories.Item(quantity=1, quantity_claimed=1)
 
     db.session.commit()
 
@@ -161,8 +161,8 @@ def test_item_claim_none_available():
 @pytest.mark.usefixtures('context')
 def test_item_claim_too_many():
     """Test `Item.claim()` with a quantity that's too large."""
-    user = factories.user()
-    item = factories.item(quantity=1)
+    user = factories.User()
+    item = factories.Item(quantity=1)
 
     db.session.commit()
 
@@ -176,8 +176,8 @@ def test_item_claim_too_many():
 @pytest.mark.usefixtures('context')
 def test_item_claim_unlimited():
     """Test `Item.claim()` with an item with unlimited quantity."""
-    user = factories.user()
-    item = factories.item(quantity=0)
+    user = factories.User()
+    item = factories.Item(quantity=0)
 
     db.session.commit()
 
@@ -191,8 +191,8 @@ def test_item_claim_unlimited():
 @pytest.mark.usefixtures('context')
 def test_item_is_claimed():
     """Test `Item.is_claimed()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.claim(user, quantity=1)
@@ -203,9 +203,9 @@ def test_item_is_claimed():
 @pytest.mark.usefixtures('context')
 def test_item_is_claimed_unclaimed():
     """Test `Item.is_claimed()` with an unclaimed user."""
-    user1 = factories.user()
-    user2 = factories.user()
-    item = factories.item()
+    user1 = factories.User()
+    user2 = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.claim(user1, quantity=1)
@@ -216,8 +216,8 @@ def test_item_is_claimed_unclaimed():
 @pytest.mark.usefixtures('context')
 def test_item_is_purchased():
     """Test `Item.is_purchased()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.claim(user, quantity=1)
@@ -229,8 +229,8 @@ def test_item_is_purchased():
 @pytest.mark.usefixtures('context')
 def test_item_is_purchased_unclaimed():
     """Test `Item.is_purchased()` with an unclaimed item."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.mark_purchased(user)
@@ -241,8 +241,8 @@ def test_item_is_purchased_unclaimed():
 @pytest.mark.usefixtures('context')
 def test_item_mark_purchased():
     """Test `Item.mark_purchased()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     claim = item.claim(user, quantity=1)
@@ -254,8 +254,8 @@ def test_item_mark_purchased():
 @pytest.mark.usefixtures('context')
 def test_item_mark_unpurchased():
     """Test `Item.mark_unpurchased()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     claim = item.claim(user, quantity=1)
@@ -268,8 +268,8 @@ def test_item_mark_unpurchased():
 @pytest.mark.usefixtures('context')
 def test_item_quantity_claimed_by_user():
     """Test `Item.quantity_claimed_by_user()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.claim(user, quantity=1)
@@ -280,9 +280,9 @@ def test_item_quantity_claimed_by_user():
 @pytest.mark.usefixtures('context')
 def test_item_quantity_claimed_by_user_unclaimed():
     """Test `Item.quantity_claimed_by_user()` by an unclaimed user."""
-    user1 = factories.user()
-    user2 = factories.user()
-    item = factories.item()
+    user1 = factories.User()
+    user2 = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     item.claim(user1, quantity=1)
@@ -293,8 +293,8 @@ def test_item_quantity_claimed_by_user_unclaimed():
 @pytest.mark.usefixtures('context')
 def test_item_unclaim():
     """Test `Item.unclaim()`."""
-    user = factories.user()
-    item = factories.item(quantity=10)
+    user = factories.User()
+    item = factories.Item(quantity=10)
     db.session.commit()
 
     item.claim(user, quantity=5)
@@ -306,8 +306,8 @@ def test_item_unclaim():
 @pytest.mark.usefixtures('context')
 def test_item__user_claim():
     """Test `Item._user_claim()`."""
-    user = factories.user()
-    item = factories.item()
+    user = factories.User()
+    item = factories.Item()
     db.session.commit()
 
     expected = item.claim(user, quantity=1)
