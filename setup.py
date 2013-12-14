@@ -54,7 +54,7 @@ setup(
         'gunicorn==18.0',
         'itsdangerous==0.23',
         'newrelic==2.6.0.5',
-        'raven==3.5.2',
+        'raven==3.6.0',
         'passlib==1.6.1',
         'psycopg2==2.5.1',
         'pytz==2013.8',
