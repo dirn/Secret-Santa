@@ -3,7 +3,10 @@
 import pytest
 from wtforms.validators import ValidationError
 
+from tests import factories
 from xmas import validators
+from xmas.core import db
+from xmas.models import User
 
 
 class DummyForm(dict):
@@ -77,3 +80,45 @@ def test_slugify_validationerror(dummy_form):
     field = DummyField(None)
     with pytest.raises(ValidationError):
         validators.Slugify('field')(dummy_form, field)
+
+
+@pytest.mark.usefixtures('context')
+def test_unique(dummy_form):
+    """Test `Unique`."""
+    dummy_form.id = DummyField(None)
+    field = DummyField('email@example.org')
+    assert validators.Unique(User, 'email')(dummy_form, field) is None
+
+
+@pytest.mark.usefixtures('context')
+def test_unique_existing(dummy_form):
+    """Test `Unique` with an existing record."""
+    user = factories.User()
+    db.session.commit()
+
+    dummy_form.id = DummyField(user.id)
+    field = DummyField(user.email)
+    assert validators.Unique(User, 'email')(dummy_form, field) is None
+
+
+@pytest.mark.usefixtures('context')
+def test_unique_new(dummy_form):
+    """Test `Unique` with a new record."""
+    factories.User(email='taken@example.org')
+    db.session.commit()
+
+    dummy_form.id = DummyField(None)
+    field = DummyField('not-taken@example.org')
+    assert validators.Unique(User, 'email')(dummy_form, field) is None
+
+
+@pytest.mark.usefixtures('context')
+def test_unique_validationerror(dummy_form):
+    """Test `Unique` raises `ValidationError`."""
+    factories.User(email='taken@example.org')
+    db.session.commit()
+
+    dummy_form.id = DummyField(None)
+    field = DummyField('taken@example.org')
+    with pytest.raises(ValidationError):
+        validators.Unique(User, 'email')(dummy_form, field)

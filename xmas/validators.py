@@ -51,7 +51,7 @@ class Slugify:
 
 class Unique:
 
-    """Checks that a value is unique for a Simon model."""
+    """Checks that a value is unique for a model."""
 
     def __init__(self, model, field, message=None):
         self.model = model

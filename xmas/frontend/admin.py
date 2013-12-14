@@ -64,14 +64,7 @@ class EventModelView(ModelView):
             return redirect(return_url)
 
         model.assign_recipients()
-        # try:
-        #     model.assign_recipients()
-        # except:
-        #     return redirect(
-        #         url_for('.assign_recipients', id=id, url=return_url)
-        #     )
-        # else:
-        #     return redirect(return_url)
+
         return redirect(return_url)
 
     @expose('/lock/', methods=('GET', 'POST'))

@@ -13,6 +13,8 @@ class CreateUserCommand(Command):
     """Create a user."""
 
     def run(self):
+        """Run the command."""
+        # Get the information.
         email = prompt('Email')
         name = prompt('Name')
         password = prompt_pass('Password')
@@ -22,12 +24,16 @@ class CreateUserCommand(Command):
             'password': password,
             'password_confirm': password_confirm,
         })
+
+        # Validate the form.
         form = RegisterForm(data, csrf_enabled=False)
         if form.validate():
             user = register_user(name=name, email=email, password=password)
             print('\nUser created successfully.')
             print('User(id={} email={})'.format(user.id, user.email))
             return
+
+        # If something went wrong, report it and exit out.
         print('\nError creating user:')
         for errors in form.errors.values():
             print('\n'.join(errors))
