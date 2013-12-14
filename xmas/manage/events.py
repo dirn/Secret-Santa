@@ -15,6 +15,8 @@ class CreateEventCommand(Command):
     """Create an event."""
 
     def run(self):
+        """Run the command."""
+        # Get the information.
         name = prompt('Name')
         slug = prompt('Slug', default='')
         begins = prompt('Begins on')
@@ -31,6 +33,8 @@ class CreateEventCommand(Command):
             'number_of_recipients': number_of_recipients,
             'suggested_limit': suggested_limit,
         })
+
+        # Validate the form.
         form = EventForm(data, csrf_enabled=False)
         if form.validate():
             event = Event(
@@ -46,6 +50,8 @@ class CreateEventCommand(Command):
             print('\nEvent created successfully.')
             print('Event(id={0.id} name={0.name} slug={0.slug})'.format(event))
             return
+
+        # If something went wrong, report it and exit out.
         print('\nError creating event:')
         for field, errors in form.errors.items():
             print('{}:'.format(field), '\n'.join(errors))

@@ -1,6 +1,6 @@
 """Users models."""
 
-from flask.ext.security import UserMixin, RoleMixin
+from flask.ext.security import RoleMixin, UserMixin
 
 from xmas.core import db
 
