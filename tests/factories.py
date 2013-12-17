@@ -1,4 +1,4 @@
-"""Factory for populating models for tests."""
+"""Factories for populating models for tests."""
 
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
@@ -10,7 +10,7 @@ from xmas.utils import slugify
 
 class Event(SQLAlchemyModelFactory):
 
-    """Return an instance of :class:`~xmas.models.Event`."""
+    """A factory instance of :class:`~xmas.models.Event`."""
 
     FACTORY_FOR = models.Event
     FACTORY_SESSION = db.session
@@ -22,7 +22,7 @@ class Event(SQLAlchemyModelFactory):
 
 class Item(SQLAlchemyModelFactory):
 
-    """Return an instance of :class:`~xmas.models.Item`."""
+    """A factory instance of :class:`~xmas.models.Item`."""
 
     FACTORY_FOR = models.Item
     FACTORY_SESSION = db.session
@@ -33,7 +33,7 @@ class Item(SQLAlchemyModelFactory):
 
 class User(SQLAlchemyModelFactory):
 
-    """Return an instance of :class:`~xmas.models.User`."""
+    """A factory instance of :class:`~xmas.models.User`."""
 
     FACTORY_FOR = models.User
     FACTORY_SESSION = db.session

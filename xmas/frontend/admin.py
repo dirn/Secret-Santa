@@ -16,6 +16,14 @@ def date_formatter(view, context, model, name):
     return getattr(model, name).strftime('%b %d, %Y')
 
 
+class AdminModelView(ModelView):
+
+    """Make views accessible only to admins."""
+
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
+
 class AuthenticatedMenuLink(MenuLink):
 
     """Only show a link to authenticated users."""
@@ -32,7 +40,7 @@ class NotAuthenticatedMenuLink(MenuLink):
         return not current_user.is_authenticated()
 
 
-class EventModelView(ModelView):
+class EventModelView(AdminModelView):
 
     """Admin for :class:`~xmas.models.Event`."""
 
@@ -88,7 +96,7 @@ class EventModelView(ModelView):
         return redirect(return_url)
 
 
-class UserModelView(ModelView):
+class UserModelView(AdminModelView):
 
     """Admin for :class:`~xmas.models.User`."""
 
@@ -99,6 +107,9 @@ class UserModelView(ModelView):
 
     form_columns = ('name', 'email', 'active', 'roles')
 
+    def is_accessible(self):
+        return current_user.has_role('admin')
+
 
 def init_app(app):
     """Initialize the admin app."""
@@ -106,7 +117,7 @@ def init_app(app):
 
     admin.add_view(EventModelView(Event, db.session, 'Events'))
     admin.add_view(UserModelView(User, db.session, 'Users'))
-    admin.add_view(ModelView(Role, db.session, 'Roles'))
+    admin.add_view(AdminModelView(Role, db.session, 'Roles'))
 
     admin.add_link(
         NotAuthenticatedMenuLink(name='Login', endpoint='security.login')
