@@ -119,6 +119,8 @@ def init_app(app):
     admin.add_view(UserModelView(User, db.session, 'Users'))
     admin.add_view(AdminModelView(Role, db.session, 'Roles'))
 
+    admin.add_link(MenuLink(name='Back to site', endpoint='dashboard.index'))
+
     admin.add_link(
         NotAuthenticatedMenuLink(name='Login', endpoint='security.login')
     )

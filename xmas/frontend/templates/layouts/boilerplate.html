@@ -55,13 +55,16 @@
 
       <ul class="nav navbar-nav navbar-right">
         {% if current_user.is_authenticated() %}
+          {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
+          {% endif %}
           <li{% if request.endpoint == 'users.profile' %} class="active"{% endif %}>
-        <a href="{{ url_for('users.profile') }}">Profile</a>
-        </li>
-        <li><a href="{{ url_for('security.logout') }}">Logout</a></li>
-      {% else %}
+            <a href="{{ url_for('users.profile') }}">Profile</a>
+          </li>
+          <li><a href="{{ url_for('security.logout') }}">Logout</a></li>
+        {% else %}
           <li><a href="{{ url_for('security.login') }}">Login</a></li>
-      {% endif %}
+        {% endif %}
       </ul>
     </nav>
   </div>
