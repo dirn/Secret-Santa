@@ -1,5 +1,6 @@
 docs/_build
 .sass-cache
+instance
 
 *~
 *.swp
