@@ -47,6 +47,11 @@ class Event(db.Model):
         if self.locked:
             return
 
+        # In case recipients are being reassigned, existing ones should
+        # be removed.
+        EventRecipient.query.filter(
+            EventRecipient.event_id == self.id).delete()
+
         total = len(self.users)
         maximum = min(self.number_of_recipients, total - 1)
 
