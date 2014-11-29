@@ -41,7 +41,7 @@ setup(
         'Flask-Principal==0.4.0',
         'Flask-SQLAlchemy==1.0',
         'Flask-Script==0.6.6',
-        'Flask-Security==1.6.9',
+        'Flask-Security==1.7.4',
         'Flask-WTF==0.9.3',
         'Jinja2==2.7.1',
         'Mako==0.9.0',

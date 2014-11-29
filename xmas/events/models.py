@@ -1,5 +1,6 @@
 """Events models."""
 
+from collections import deque
 import datetime
 import random
 
@@ -53,12 +54,23 @@ class Event(db.Model):
         users = self.users[:]
         # Randomize it.
         random.shuffle(users)
-        # And extend it.
-        users *= 2
 
-        recipients = {
-            users[x]: users[x + 1:x + maximum + 1] for x in range(total)
-        }
+        if maximum == 1:
+            # When there is only one recipient, just rotate the
+            # randomized list of users by one to assign the recipients.
+            # Fortunately `collections.deque` has a handy rotate method.
+            dq = deque(users)
+            dq.rotate(1)
+            recipients = {
+                users[x]: [user] for x, user in enumerate(dq)
+            }
+        else:
+            # And extend it.
+            users *= 2
+
+            recipients = {
+                users[x]: users[x + 1:x + maximum + 1] for x in range(total)
+            }
 
         for k, v in recipients.items():
             k.event_recipients = [EventRecipient(self, k, u) for u in v]
