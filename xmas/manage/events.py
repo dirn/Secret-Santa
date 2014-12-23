@@ -41,6 +41,7 @@ class CreateEventCommand(Command):
                 name=form.name.data,
                 slug=form.slug.data,
                 begins=form.begins.data,
+                ends=form.ends.data,
                 active=form.active.data,
                 number_of_recipients=form.number_of_recipients.data,
                 suggested_limit=form.suggested_limit.data,
