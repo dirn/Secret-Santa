@@ -1,18 +1,7 @@
 from __future__ import with_statement
-
-from os.path import abspath, dirname
-import sys
-sys.path.append(dirname(dirname(abspath(__file__))))
-
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
-
-from xmas.core import db
-from xmas.factory import create_app
-from xmas.models import *  # NOQA
-
-app = create_app(__name__, '')
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -26,7 +15,9 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = db.metadata
+from flask import current_app
+config.set_main_option('sqlalchemy.url', current_app.config.get('SQLALCHEMY_DATABASE_URI'))
+target_metadata = current_app.extensions['migrate'].db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -58,11 +49,8 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    alembic_config = config.get_section(config.config_ini_section)
-    alembic_config['sqlalchemy.url'] = app.config['SQLALCHEMY_DATABASE_URI']
-
     engine = engine_from_config(
-                alembic_config,
+                config.get_section(config.config_ini_section),
                 prefix='sqlalchemy.',
                 poolclass=pool.NullPool)
 

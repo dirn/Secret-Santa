@@ -8,7 +8,7 @@ from flask.ext.login import current_user
 from xmas.core import db
 from xmas.forms import ItemForm
 from xmas.frontend import route
-from xmas.models import Event, EventRecipient, Item, ItemClaim
+from xmas.models import Event, EventRecipient, Item, ItemClaim, User
 
 __all__ = 'blueprint',
 
@@ -119,7 +119,10 @@ def unclaim():
 @route(blueprint, '/<string:slug>')
 def view(slug, show_all=False):
     """Return the detailed view of the event."""
-    event = Event.query.filter_by(slug=slug).first_or_404()
+    event = Event.query.filter(
+        Event.slug == slug,
+        Event.users.any(User.id == current_user.id),
+    ).first_or_404()
 
     # Load all of the event's recipients.
     recipients = EventRecipient.query.filter_by(event=event)
