@@ -1,10 +1,12 @@
 language: python
-python:
-  - 3.3
-install:
-  - pip install -e git+https://github.com/dirn/flask-security#egg=hacked
-  - pip install coverage factory_boy==2.2.1 pytest
-  - pip install .
+
+python: 3.3
+
+install: pip install tox
+
+env:
+  - TOX_ENV=py33
 script:
-  - coverage run --source xmas -m pytest
+  - tox -e $TOX_ENV
+
 sudo: false
