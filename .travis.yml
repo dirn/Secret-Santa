@@ -7,3 +7,4 @@ install:
   - pip install .
 script:
   - coverage run --source xmas -m pytest
+sudo: false
