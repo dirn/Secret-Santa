@@ -35,7 +35,7 @@ def claim():
 def claims(slug):
     """Return a user's shopping list for the event."""
     event = Event.query.filter(Event.slug == slug).first_or_404()
-    claims = ItemClaim.query.filter(
+    claims = ItemClaim.query.join(Item).filter(
         Item.event_id == event.id,
         ItemClaim.user_id == current_user.id,
     )
